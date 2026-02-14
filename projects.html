@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Matthew Long | Home</title>
-    <meta name="description" content="Intro page for Matthew Long's portfolio." />
+    <title>Matthew Long | Projects</title>
+    <meta name="description" content="Project menu for Matthew Long's portfolio." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -20,26 +20,31 @@
     <main class="shell">
       <header class="hero">
         <nav class="site-nav" aria-label="Primary">
-          <a class="nav-link is-active" href="index.html">Home</a>
-          <a class="nav-link" href="projects.html">Projects</a>
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link is-active" href="projects.html">Projects</a>
           <a class="nav-link" href="https://www.linkedin.com/in/mjslong/" target="_blank" rel="noreferrer">LinkedIn</a>
           <a class="nav-link" href="https://github.com/mlong2904" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
 
-        <p class="eyebrow">About Me + What You Can Explore</p>
-        <h1>Matthew Long</h1>
+        <p class="eyebrow">Projects</p>
+        <h1>Project Menu</h1>
         <p class="lede">
-          Hi, I'm Matthew Long, a junior studying Economics at Purdue University.
-          Feel free to explore and reach out if you'd like to connect!
+          Choose a project to open its dedicated detail page.
         </p>
       </header>
 
-      <section class="panel">
-        <h2>What You Can Explore</h2>
-        <ul class="clean-list">
-          <li>Interactive project views with summaries and context.</li>
-          <li>Data previews loaded directly from project CSV files.</li>
-        </ul>
+      <section class="project-grid" aria-label="Project buttons">
+        <article class="project-card">
+          <h2>NBA Undervalued Players</h2>
+          <p>
+            Analysis of player market value versus expected wins contribution for non-All-Stars,
+            including an interactive CSV data preview.
+          </p>
+          <div class="button-row">
+            <a class="button" href="project-undervalued-players.html">Open Project</a>
+            <a class="button" href="data/market_value_master_1991_2026_non_all_stars.csv">Open CSV</a>
+          </div>
+        </article>
       </section>
     </main>
   </body>

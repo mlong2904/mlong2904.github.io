@@ -2,22 +2,14 @@
 
 Portfolio site for `https://mlong2904.github.io`.
 
-## Files
-- `index.html` - portfolio layout
-- `styles.css` - site styles
-- `app.js` - CSV loader + preview table
+## Site structure
+- `index.html` - intro/home page
+- `projects.html` - project menu page
+- `project-undervalued-players.html` - detail page for NBA undervalued players project
+- `styles.css` - shared site styles
+- `app.js` - CSV preview logic for project detail pages
+- `data/` - local datasets used by project pages
 
-## Add your NBA CSV data
-1. Put your files inside `data/` (example: `data/nba_success.csv`).
-2. Open `app.js` and edit `config.csvFiles` with your file names.
-3. Commit and push.
-
-The site loads the first CSV file that exists and shows row/column stats with a table preview.
-
-## Publish on GitHub Pages
-1. Push this repository to GitHub.
-2. In GitHub, open **Settings -> Pages**.
-3. Under **Build and deployment**, set:
-   - **Source:** Deploy from a branch
-   - **Branch:** `main` and `/ (root)`
-4. Wait for deployment, then open `https://mlong2904.github.io`.
+## Projects
+- NBA Undervalued Players Analysis
+  - dataset: `data/market_value_master_1991_2026_non_all_stars.csv`
