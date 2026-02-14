@@ -34,7 +34,32 @@ const HEADER_LABELS = {
   is_all_star: "All Star",
 };
 
+const HEADER_DESCRIPTIONS = {
+  season: "Season end year (example: 2026 means the 2025-26 season).",
+  player: "Player name.",
+  player_id: "Stable player identifier from the source dataset.",
+  lg: "League code (usually NBA).",
+  mp: "Total minutes played by the player in that season.",
+  g: "Games played in that season.",
+  wins_above_average: "Model-estimated wins above season/league average player contribution.",
+  mp_per_game: "Minutes per game (mp / g).",
+  prev_wins_above_average:
+    "Prior season wins_above_average for the same player (0 if unavailable).",
+  prev_mp: "Prior season minutes played for the same player (0 if unavailable).",
+  prev_g: "Prior season games played for the same player (0 if unavailable).",
+  career_season_num: "Player career season index in the dataset (1 = first season on record).",
+  season_idx: "Numeric season offset from the dataset's first season (time feature).",
+  expected_wins_above_average:
+    "Expected value from the market-value proxy model given usage/history features.",
+  value_residual: "wins_above_average - expected_wins_above_average.",
+  undervalued_score: "value_residual * sqrt(mp / 1000); boosts strong residuals with meaningful minute load.",
+  season_residual_z:
+    "Z-score of value_residual within a season (how extreme the residual is that year).",
+  is_all_star: "Present in _non_all_stars build; should be False for included rows.",
+};
+
 const INTEGER_COLUMNS = new Set(["season", "g", "mp", "prev_mp", "season_idx", "career_season_num"]);
+const HIDDEN_COLUMNS = new Set(["season_idx", "mp", "player_id", "is_all_star", "lg"]);
 
 function parseCsv(text) {
   const rows = [];
@@ -102,6 +127,8 @@ function renderTable(headers, rows, sourcePath) {
   const tbody = table.querySelector("tbody");
   const source = document.getElementById("csv-source");
   const stats = document.getElementById("csv-stats");
+  const visibleHeaders = headers.filter((header) => !HIDDEN_COLUMNS.has(header));
+  const visibleIndexes = visibleHeaders.map((header) => headers.indexOf(header));
   const totalPages = Math.max(1, Math.ceil(rows.length / state.rowsPerPage));
   if (state.currentPage > totalPages) {
     state.currentPage = totalPages;
@@ -110,21 +137,23 @@ function renderTable(headers, rows, sourcePath) {
   const end = start + state.rowsPerPage;
   const pageRows = rows.slice(start, end);
 
-  thead.innerHTML = `<tr>${headers
+  thead.innerHTML = `<tr>${visibleHeaders
     .map((name) => {
+      const label = formatHeaderLabel(name);
+      const description = escapeHtmlAttr(getHeaderDescription(name));
       const isActiveDesc = state.sortField === name && state.sortDirection === "desc";
       const isActiveAsc = state.sortField === name && state.sortDirection === "asc";
       return `
         <th>
           <div class="th-wrap">
-            <span>${formatHeaderLabel(name)}</span>
+            <span title="${description}">${label}</span>
             <span class="th-sort">
               <button
                 type="button"
                 class="th-sort-btn ${isActiveDesc ? "is-active" : ""}"
                 data-sort-header="${name}"
                 data-sort-direction="desc"
-                aria-label="Sort ${formatHeaderLabel(name)} high to low"
+                aria-label="Sort ${label} high to low"
                 title="High to low"
               >↓</button>
               <button
@@ -132,7 +161,7 @@ function renderTable(headers, rows, sourcePath) {
                 class="th-sort-btn ${isActiveAsc ? "is-active" : ""}"
                 data-sort-header="${name}"
                 data-sort-direction="asc"
-                aria-label="Sort ${formatHeaderLabel(name)} low to high"
+                aria-label="Sort ${label} low to high"
                 title="Low to high"
               >↑</button>
             </span>
@@ -144,8 +173,8 @@ function renderTable(headers, rows, sourcePath) {
   tbody.innerHTML = pageRows
     .map(
       (row) =>
-        `<tr>${headers
-          .map((header, index) => `<td>${formatCellValue(row[index], header)}</td>`)
+        `<tr>${visibleHeaders
+          .map((header, index) => `<td>${formatCellValue(row[visibleIndexes[index]], header)}</td>`)
           .join("")}</tr>`
     )
     .join("");
@@ -156,7 +185,7 @@ function renderTable(headers, rows, sourcePath) {
     `<span class="stat-pill">Rows per page: ${state.rowsPerPage}</span>`,
     `<span class="stat-pill">Showing: ${pageRows.length}</span>`,
     `<span class="stat-pill">Page: ${state.currentPage}/${totalPages}</span>`,
-    `<span class="stat-pill">Columns: ${headers.length}</span>`,
+    `<span class="stat-pill">Columns: ${visibleHeaders.length}</span>`,
   ].join("");
 
   renderPagination(totalPages, start + 1, Math.min(end, rows.length), rows.length);
@@ -207,6 +236,18 @@ function formatHeaderLabel(header) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function getHeaderDescription(header) {
+  return HEADER_DESCRIPTIONS[header] || `Definition for ${formatHeaderLabel(header)}.`;
+}
+
+function escapeHtmlAttr(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function formatCellValue(value, header) {

@@ -57,6 +57,24 @@
           <li>Main fields: season, player, wins_above_average, expected_wins_above_average, undervalued_score</li>
           <li>Scope: non-All-Star seasons only</li>
         </ul>
+        <details class="data-dictionary">
+          <summary>Column Definitions</summary>
+          <ul class="clean-list">
+            <li><code>Season</code>: Season end year (for example, <code>2026</code> = 2025-26 season).</li>
+            <li><code>Player</code>: Player name.</li>
+            <li><code>Games</code>: Games played.</li>
+            <li><code>Wins Above Avg</code>: Model-estimated wins above average contribution.</li>
+            <li><code>Minutes per Game</code>: Minutes per game (<code>mp / g</code>).</li>
+            <li><code>Prev Wins Above Average</code>: Prior season's <code>wins_above_average</code> (0 if unavailable).</li>
+            <li><code>Prev Minutes</code>: Prior season's minutes played (0 if unavailable).</li>
+            <li><code>Prev Games</code>: Prior season's games played (0 if unavailable).</li>
+            <li><code>Career Season #</code>: Career season number in dataset (<code>1</code> = first season).</li>
+            <li><code>Expected Wins Above Avg</code>: Model-expected wins above average.</li>
+            <li><code>Value Residual</code>: <code>wins_above_average - expected_wins_above_average</code>.</li>
+            <li><code>Undervalued Score</code>: <code>value_residual * sqrt(mp / 1000)</code>.</li>
+            <li><code>Season Residual Z</code>: Within-season z-score of <code>value_residual</code>.</li>
+          </ul>
+        </details>
       </section>
 
       <section class="panel">
