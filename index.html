@@ -3,8 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Matthew Long</title>
-    <meta name="description" content="Personal site for Matthew Long." />
+    <title>Matthew Long | Portfolio</title>
+    <meta
+      name="description"
+      content="Portfolio site for Matthew Long featuring software projects and data work."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,23 +21,47 @@
     <div class="bg-orb orb-b"></div>
 
     <main class="shell">
-      <p class="eyebrow">GitHub Pages</p>
-      <h1>Matthew Long</h1>
-      <p class="lede">
-        I build thoughtful software and ship practical products.
-      </p>
+      <header class="hero">
+        <p class="eyebrow">Portfolio</p>
+        <h1>Matthew Long</h1>
+        <p class="lede">
+          I build practical software and data products with a focus on clear decisions,
+          strong execution, and measurable outcomes.
+        </p>
+        <nav class="links" aria-label="External links">
+          <a href="https://github.com/mlong2904" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </header>
 
       <section class="panel">
-        <h2>Current Focus</h2>
+        <h2>Featured Project: NBA Success Analysis</h2>
         <p>
-          This site is now live from the <code>mlong2904.github.io</code> repository.
-          Next step: add projects, writing, and contact links.
+          This project analyzes patterns behind team success using historical NBA data.
+          The table below is loaded directly from your CSV files in this repo.
         </p>
+        <div class="stat-row" id="csv-stats">
+          <span class="stat-pill">Waiting for CSV</span>
+        </div>
       </section>
 
-      <nav class="links" aria-label="External links">
-        <a href="https://github.com/mlong2904" target="_blank" rel="noreferrer">GitHub</a>
-      </nav>
+      <section class="table-panel" aria-live="polite">
+        <div class="table-head">
+          <h3>CSV Preview</h3>
+          <p id="csv-source">No data loaded yet.</p>
+        </div>
+        <div class="table-wrap">
+          <table id="csv-table">
+            <thead></thead>
+            <tbody>
+              <tr>
+                <td>Add a CSV file to <code>data/</code> and update <code>app.js</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
+
+    <script src="app.js"></script>
   </body>
 </html>
