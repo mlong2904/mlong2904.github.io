@@ -42,7 +42,7 @@
         <h2>Overview</h2>
         <p>
           This analysis covers NBA seasons from 1991 to 2026 and focuses on non-All-Star
-          players. The core output is an <code>undervalued_score</code> that highlights players
+          players but visualizations are extended to all players. The core output is an <code>undervalued_score</code> that highlights players
           creating more impact than expected by the model.
         </p>
         <div class="stat-row" id="csv-stats">
@@ -53,46 +53,195 @@
       <section class="panel">
         <h2>Data Source</h2>
         <ul class="clean-list">
-          <li>File: <code>data/market_value_master_1991_2026_non_all_stars.csv</code></li>
-          <li>Main fields: season, player, wins_above_average, expected_wins_above_average, undervalued_score</li>
-          <li>Scope: non-All-Star seasons only</li>
+          <li>Dataset: Kaggle <code>sumitrodatta/nba-aba-baa-stats</code></li>
+          <li>Files used: Team Summaries, Player Totals, Advanced, All-Star Selections</li>
+          <li>Scope: 1991-2026 (non-All-Star and all-player variants)</li>
+          <li>Main metrics: <code>wins_above_average</code>, <code>cwar</code>, <code>expected_*</code>, <code>value_residual</code>, <code>undervalued_score*</code></li>
+          <li>Project files: <code>data/market_value_war_master_1991_2026_non_all_stars.csv</code> and <code>data/market_value_war_master_1991_2026.csv</code></li>
         </ul>
         <details class="data-dictionary">
           <summary>Column Definitions</summary>
           <ul class="clean-list">
             <li><code>Season</code>: Season end year (for example, <code>2026</code> = 2025-26 season).</li>
             <li><code>Player</code>: Player name.</li>
+            <li><code>Team</code>: Team abbreviation for that season.</li>
             <li><code>Games</code>: Games played.</li>
-            <li><code>Wins Above Avg</code>: Model-estimated wins above average contribution.</li>
             <li><code>Minutes per Game</code>: Minutes per game (<code>mp / g</code>).</li>
-            <li><code>Prev Wins Above Average</code>: Prior season's <code>wins_above_average</code> (0 if unavailable).</li>
-            <li><code>Prev Minutes</code>: Prior season's minutes played (0 if unavailable).</li>
-            <li><code>Prev Games</code>: Prior season's games played (0 if unavailable).</li>
+            <li><code>cWAR</code>: Context-adjusted wins above replacement.</li>
+            <li><code>Prev cWAR</code>: Prior season cWAR (0 if unavailable).</li>
+            <li><code>Prev Minutes</code>: Prior season minutes played (0 if unavailable).</li>
+            <li><code>Prev Games</code>: Prior season games played (0 if unavailable).</li>
             <li><code>Career Season #</code>: Career season number in dataset (<code>1</code> = first season).</li>
-            <li><code>Expected Wins Above Avg</code>: Model-expected wins above average.</li>
-            <li><code>Value Residual</code>: <code>wins_above_average - expected_wins_above_average</code>.</li>
-            <li><code>Undervalued Score</code>: <code>value_residual * sqrt(mp / 1000)</code>.</li>
-            <li><code>Season Residual Z</code>: Within-season z-score of <code>value_residual</code>.</li>
+            <li><code>Expected cWAR</code>: Model-expected cWAR.</li>
+            <li><code>Value Residual</code>: <code>cwar - expected_cwar</code> style gap in observed vs expected value.</li>
+            <li><code>Undervalued Score (WAR)</code>: WAR-based undervalued score from residual and minutes context.</li>
+            <li><code>Season Residual Z</code>: Within-season z-score of value residual.</li>
           </ul>
         </details>
       </section>
 
       <section class="panel">
-        <h2>Visualizations</h2>
-        <div class="viz-grid">
-          <article class="viz-card">
-            <h3>Top 10 Undervalued Player-Seasons</h3>
-            <div id="top-undervalued-bars" class="bar-chart">
-              <p class="viz-meta">Loading chart...</p>
+        <h2>Analysis</h2>
+        <div class="analysis-block">
+          <h3>Visualizations</h3>
+          <div class="viz-grid">
+            <details class="viz-item">
+              <summary>Top 10 Most Valuable Player-Seasons</summary>
+              <div id="top-valuable-bars" class="bar-chart">
+                <p class="viz-meta">Loading chart...</p>
+              </div>
+            </details>
+            <details class="viz-item">
+              <summary>Top 10 Undervalued Player-Seasons</summary>
+              <div id="top-undervalued-bars" class="bar-chart">
+                <p class="viz-meta">Loading chart...</p>
+              </div>
+            </details>
+            <details class="viz-item">
+              <summary>Top 10 Most Overvalued Player-Seasons</summary>
+              <div id="top-overvalued-bars" class="bar-chart">
+                <p class="viz-meta">Loading chart...</p>
+              </div>
+            </details>
+            <details class="viz-item">
+              <summary>Top 10 Least Valuable Player-Seasons</summary>
+              <div id="top-least-valuable-bars" class="bar-chart">
+                <p class="viz-meta">Loading chart...</p>
+              </div>
+            </details>
+          </div>
+        </div>
+        <div class="analysis-block">
+          <h3>Methodology</h3>
+          <details class="methodology-item">
+            <summary>Open Methodology</summary>
+            <div class="methodology-content">
+              <h4>A) Player Wins Contribution </h4>
+              <ol class="clean-list">
+                <li>Build player feature table from <code>Player Totals.csv</code> + <code>Advanced.csv</code>.</li>
+                <li>
+                  Compute minute share inside each team-season:
+                  <br />
+                  <code>mp_share = player_mp / team_total_mp</code>
+                </li>
+                <li>
+                  Build team-level weighted features:
+                  <br />
+                  <code>contrib_feature = mp_share * player_feature</code>
+                </li>
+                <li>Train Ridge model to predict team wins (<code>w</code>) from weighted team features.</li>
+                <li>
+                  Convert team prediction back to players:
+                  <br />
+                  <code>raw_pred_contribution = sum(contrib_feature * model_coef)</code>
+                  <br />
+                  Scale to team actual wins context using <code>scale_to_actual</code>.
+                </li>
+                <li>
+                  Apply stabilization:
+                  <br />
+                  <code>actual_scaled_contribution_raw = raw_pred_contribution * scale_to_actual</code>
+                  <br />
+                  <code>shrink_factor = g / (g + 35)</code>
+                  <br />
+                  <code>actual_scaled_contribution = actual_scaled_contribution_raw * shrink_factor</code>
+                  <br />
+                  Clip <code>actual_scaled_contribution</code> to <code>± (0.30 * g)</code>.
+                </li>
+                <li>
+                  Compute above-average value:
+                  <br />
+                  <code>season_league_avg_contribution = mean(actual_scaled_contribution by season+lg)</code>
+                  <br />
+                  <code>wins_above_average = actual_scaled_contribution - season_league_avg_contribution</code>
+                  <br />
+                  Clip <code>wins_above_average</code> to <code>± (0.22 * g)</code>
+                  <br />
+                  <code>wins_above_average_per_1000_mp = (wins_above_average / mp) * 1000</code>
+                </li>
+              </ol>
+
+              <h4>B) Salary-Free Undervalued Model </h4>
+              <ol class="clean-list">
+                <li>Aggregate to one row per player-season.</li>
+                <li>
+                  Train Ridge model to predict expected value from usage/history with features:
+                  <code>mp</code>, <code>g</code>, <code>mp_per_game</code>,
+                  <code>prev_wins_above_average</code>, <code>prev_mp</code>, <code>prev_g</code>,
+                  <code>career_season_num</code>, <code>season_idx</code>.
+                </li>
+                <li>
+                  Compute residual value:
+                  <br />
+                  <code>expected_wins_above_average = model prediction</code>
+                  <br />
+                  <code>value_residual = wins_above_average - expected_wins_above_average</code>
+                </li>
+                <li>
+                  Compute final ranking score:
+                  <br />
+                  <code>undervalued_score = value_residual * sqrt(mp / 1000)</code>
+                </li>
+              </ol>
+
+              <h4>C) Custom WAR Table </h4>
+              <p class="viz-meta">
+                This WAR is built from project metrics, not Basketball-Reference
+                <code>ows/dws</code>.
+              </p>
+              <ol class="clean-list">
+                <li>Start from <code>player_win_contributions.csv</code>.</li>
+                <li>Aggregate to one row per player-season-league.</li>
+                <li>
+                  Compute impact rate:
+                  <br />
+                  <code>wins_above_average_per_1000_mp = (wins_above_average / mp) * 1000</code>
+                </li>
+                <li>
+                  Estimate replacement level per season+league:
+                  <br />
+                  <code>rep_waa_per_1000_mp = 20th percentile of wins_above_average_per_1000_mp</code>
+                  (default, <code>mp >= 250</code>)
+                </li>
+                <li>
+                  Compute rate above replacement:
+                  <br />
+                  <code>rate_above_replacement = wins_above_average_per_1000_mp - rep_waa_per_1000_mp</code>
+                </li>
+                <li>
+                  Convert to wins and apply durability:
+                  <br />
+                  <code>cwar_raw = rate_above_replacement * (mp / 1000)</code>
+                  <br />
+                  <code>durability_factor = g / (g + 20)</code> (default)
+                  <br />
+                  <code>cwar = cwar_raw * durability_factor</code>
+                  <br />
+                  <code>cwar_rank</code> is rank within each <code>season + lg</code>.
+                </li>
+              </ol>
+
+              <h4>D) WAR-Based Undervalued Model </h4>
+              <ol class="clean-list">
+                <li>Use <code>nba_war_player_seasons.csv</code> as the input feature table.</li>
+                <li>
+                  Train Ridge model to estimate expected custom WAR (<code>expected_cwar</code>) using:
+                  <code>mp</code>, <code>g</code>, <code>mp_per_game</code>, <code>prev_cwar</code>,
+                  <code>prev_mp</code>, <code>prev_g</code>, <code>career_season_num</code>, <code>season_idx</code>.
+                </li>
+                <li>
+                  Compute residual value:
+                  <br />
+                  <code>value_residual = cwar - expected_cwar</code>
+                </li>
+                <li>
+                  Compute final WAR-based market score:
+                  <br />
+                  <code>undervalued_score_war = value_residual * sqrt(mp / 1000)</code>
+                </li>
+              </ol>
             </div>
-          </article>
-          <article class="viz-card">
-            <h3>Average Undervalued Score by Season</h3>
-            <div class="trend-wrap">
-              <svg id="season-trend-chart" viewBox="0 0 680 220" preserveAspectRatio="xMinYMid meet" role="img" aria-label="Season trend chart"></svg>
-            </div>
-            <p id="season-trend-meta" class="viz-meta">Loading chart...</p>
-          </article>
+          </details>
         </div>
       </section>
 
@@ -104,6 +253,13 @@
         <details class="filter-dropdown">
           <summary>Filters and Sorting</summary>
           <div class="controls-grid">
+            <label class="control">
+              <span>Dataset</span>
+              <select id="dataset-scope">
+                <option value="non_all_stars" selected>Non-All-Stars</option>
+                <option value="all_players">All Players (Includes All-Stars)</option>
+              </select>
+            </label>
             <label class="control">
               <span>Player contains</span>
               <input id="filter-player" type="text" placeholder="e.g. Gobert" />
@@ -117,15 +273,16 @@
               <input id="filter-season-max" type="number" inputmode="numeric" />
             </label>
             <label class="control">
-              <span>Min undervalued score</span>
+              <span>Min undervalued score (WAR)</span>
               <input id="filter-min-undervalued" type="number" step="0.01" />
             </label>
             <label class="control">
               <span>Sort by</span>
               <select id="sort-field">
-                <option value="undervalued_score">undervalued_score</option>
-                <option value="wins_above_average">wins_above_average</option>
-                <option value="expected_wins_above_average">expected_wins_above_average</option>
+                <option value="undervalued_score_war" selected>undervalued_score_war</option>
+                <option value="cwar">cwar</option>
+                <option value="expected_cwar">expected_cwar</option>
+                <option value="value_residual">value_residual</option>
                 <option value="season">season</option>
                 <option value="player">player</option>
               </select>
@@ -146,6 +303,15 @@
                 <option value="200">200</option>
               </select>
             </label>
+          </div>
+          <div class="column-controls">
+            <p class="column-controls-title">Visible Columns</p>
+            <div id="column-chooser" class="column-chooser">
+              <p class="viz-meta">Loading columns...</p>
+            </div>
+            <div class="button-row">
+              <button id="columns-all" class="button" type="button">Show All Columns</button>
+            </div>
           </div>
           <div class="button-row">
             <button id="reset-filters" class="button" type="button">Reset</button>

@@ -1,5 +1,8 @@
 const config = {
-  csvFile: "data/market_value_master_1991_2026_non_all_stars.csv",
+  csvFiles: {
+    non_all_stars: "data/market_value_war_master_1991_2026_non_all_stars.csv",
+    all_players: "data/market_value_war_master_1991_2026.csv",
+  },
   defaultRowsPerPage: 100,
 };
 
@@ -7,9 +10,15 @@ const state = {
   headers: [],
   rows: [],
   filteredRows: [],
+  allPlayersHeaders: [],
+  allPlayersRows: [],
   currentPage: 1,
   rowsPerPage: config.defaultRowsPerPage,
-  sortField: "undervalued_score",
+  datasetScope: "non_all_stars",
+  csvFile: config.csvFiles.non_all_stars,
+  controlsWired: false,
+  selectedColumns: new Set(),
+  sortField: "undervalued_score_war",
   sortDirection: "desc",
 };
 
@@ -32,6 +41,11 @@ const HEADER_LABELS = {
   undervalued_score: "Undervalued Score",
   season_residual_z: "Season Residual Z",
   is_all_star: "All Star",
+  team: "Team",
+  cwar: "cWAR",
+  prev_cwar: "Prev cWAR",
+  expected_cwar: "Expected cWAR",
+  undervalued_score_war: "Undervalued Score (WAR)",
 };
 
 const HEADER_DESCRIPTIONS = {
@@ -56,6 +70,11 @@ const HEADER_DESCRIPTIONS = {
   season_residual_z:
     "Z-score of value_residual within a season (how extreme the residual is that year).",
   is_all_star: "Present in _non_all_stars build; should be False for included rows.",
+  team: "Team abbreviation for that season.",
+  cwar: "Context-adjusted wins above replacement.",
+  prev_cwar: "Prior season cWAR (0 if unavailable).",
+  expected_cwar: "Expected cWAR from the WAR market-value model.",
+  undervalued_score_war: "WAR-based undervalued score derived from value residual and minutes context.",
 };
 
 const INTEGER_COLUMNS = new Set(["season", "g", "mp", "prev_mp", "season_idx", "career_season_num"]);
@@ -127,8 +146,9 @@ function renderTable(headers, rows, sourcePath) {
   const tbody = table.querySelector("tbody");
   const source = document.getElementById("csv-source");
   const stats = document.getElementById("csv-stats");
-  const visibleHeaders = headers.filter((header) => !HIDDEN_COLUMNS.has(header));
+  const visibleHeaders = getVisibleHeaders(headers);
   const visibleIndexes = visibleHeaders.map((header) => headers.indexOf(header));
+  const playerIdIndex = headers.indexOf("player_id");
   const totalPages = Math.max(1, Math.ceil(rows.length / state.rowsPerPage));
   if (state.currentPage > totalPages) {
     state.currentPage = totalPages;
@@ -174,7 +194,14 @@ function renderTable(headers, rows, sourcePath) {
     .map(
       (row) =>
         `<tr>${visibleHeaders
-          .map((header, index) => `<td>${formatCellValue(row[visibleIndexes[index]], header)}</td>`)
+          .map((header, index) => {
+            const value = row[visibleIndexes[index]];
+            if (header === "player") {
+              const playerId = playerIdIndex >= 0 ? row[playerIdIndex] : "";
+              return `<td>${formatPlayerCell(value, playerId)}</td>`;
+            }
+            return `<td>${formatCellValue(value, header)}</td>`;
+          })
           .join("")}</tr>`
     )
     .join("");
@@ -189,6 +216,15 @@ function renderTable(headers, rows, sourcePath) {
   ].join("");
 
   renderPagination(totalPages, start + 1, Math.min(end, rows.length), rows.length);
+}
+
+function getVisibleHeaders(headers) {
+  const baseHeaders = headers.filter((header) => !HIDDEN_COLUMNS.has(header));
+  if (!state.selectedColumns.size) {
+    return baseHeaders;
+  }
+  const selected = baseHeaders.filter((header) => state.selectedColumns.has(header));
+  return selected.length ? selected : baseHeaders;
 }
 
 function renderFallback(message) {
@@ -250,6 +286,30 @@ function escapeHtmlAttr(value) {
     .replace(/>/g, "&gt;");
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function getBasketballReferenceUrl(playerId) {
+  const id = String(playerId || "").trim().toLowerCase();
+  if (!id || !/^[a-z0-9]+$/.test(id)) {
+    return "";
+  }
+  return `https://www.basketball-reference.com/players/${id[0]}/${id}.html`;
+}
+
+function formatPlayerCell(playerName, playerId) {
+  const safeName = escapeHtml(playerName || "");
+  const url = getBasketballReferenceUrl(playerId);
+  if (!url) {
+    return safeName;
+  }
+  return `<a class="player-link" href="${url}" target="_blank" rel="noreferrer">${safeName}</a>`;
+}
+
 function formatCellValue(value, header) {
   if (value === undefined || value === null || value === "") {
     return "";
@@ -266,6 +326,15 @@ function formatCellValue(value, header) {
 
 function indexByName(name) {
   return state.headers.indexOf(name);
+}
+
+function firstExistingHeader(candidates) {
+  for (const candidate of candidates) {
+    if (state.headers.includes(candidate)) {
+      return candidate;
+    }
+  }
+  return "";
 }
 
 function numericValue(row, index) {
@@ -308,155 +377,161 @@ function parseOptionalNumber(value) {
 }
 
 function renderVisualizations(rows) {
+  renderTopValuableBars(rows);
   renderTopUndervaluedBars(rows);
-  renderSeasonTrend(rows);
+  renderTopOvervaluedBars(rows);
+  renderTopLeastValuableBars(rows);
+}
+
+function filterRowsForVisualizations(headers, rows) {
+  const playerIndex = headers.indexOf("player");
+  const seasonIndex = headers.indexOf("season");
+  const undervaluedHeader = headers.includes("undervalued_score_war")
+    ? "undervalued_score_war"
+    : "undervalued_score";
+  const undervaluedIndex = headers.indexOf(undervaluedHeader);
+
+  const playerQuery = getControlValue("filter-player").trim().toLowerCase();
+  const seasonMin = parseOptionalNumber(getControlValue("filter-season-min"));
+  const seasonMax = parseOptionalNumber(getControlValue("filter-season-max"));
+  const minUndervalued = parseOptionalNumber(getControlValue("filter-min-undervalued"));
+
+  return rows.filter((row) => {
+    if (playerQuery) {
+      const player = playerIndex >= 0 ? String(row[playerIndex] || "").toLowerCase() : "";
+      if (!player.includes(playerQuery)) {
+        return false;
+      }
+    }
+
+    if (seasonMin !== null) {
+      const season = seasonIndex >= 0 ? Number(row[seasonIndex]) : NaN;
+      if (!Number.isFinite(season) || season < seasonMin) {
+        return false;
+      }
+    }
+
+    if (seasonMax !== null) {
+      const season = seasonIndex >= 0 ? Number(row[seasonIndex]) : NaN;
+      if (!Number.isFinite(season) || season > seasonMax) {
+        return false;
+      }
+    }
+
+    if (minUndervalued !== null) {
+      const score = undervaluedIndex >= 0 ? Number(row[undervaluedIndex]) : NaN;
+      if (!Number.isFinite(score) || score < minUndervalued) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
+function renderVisualizationsFromAllPlayers() {
+  if (!state.allPlayersRows.length || !state.allPlayersHeaders.length) {
+    return;
+  }
+  const activeHeaders = state.headers;
+  const activeRows = state.rows;
+  state.headers = state.allPlayersHeaders;
+  const vizRows = filterRowsForVisualizations(state.allPlayersHeaders, state.allPlayersRows);
+  renderVisualizations(vizRows);
+  state.headers = activeHeaders;
+  state.rows = activeRows;
 }
 
 function renderTopUndervaluedBars(rows) {
-  const container = document.getElementById("top-undervalued-bars");
-  if (!container) {
+  const scoreHeader = firstExistingHeader(["undervalued_score_war", "undervalued_score"]);
+  renderRankedBars(rows, {
+    containerId: "top-undervalued-bars",
+    metricHeader: scoreHeader,
+    count: 10,
+    mode: "largest",
+  });
+}
+
+function renderTopValuableBars(rows) {
+  const metricHeader = firstExistingHeader(["cwar", "wins_above_average"]);
+  renderRankedBars(rows, {
+    containerId: "top-valuable-bars",
+    metricHeader,
+    count: 10,
+    mode: "largest",
+  });
+}
+
+function renderTopOvervaluedBars(rows) {
+  renderRankedBars(rows, {
+    containerId: "top-overvalued-bars",
+    metricHeader: "value_residual",
+    count: 10,
+    mode: "smallest",
+  });
+}
+
+function renderTopLeastValuableBars(rows) {
+  const metricHeader = firstExistingHeader(["cwar", "wins_above_average"]);
+  renderRankedBars(rows, {
+    containerId: "top-least-valuable-bars",
+    metricHeader,
+    count: 10,
+    mode: "smallest",
+  });
+}
+
+function renderRankedBars(rows, options) {
+  const container = document.getElementById(options.containerId);
+  if (!container || !options.metricHeader) {
     return;
   }
-
   const playerIndex = indexByName("player");
+  const playerIdIndex = indexByName("player_id");
   const seasonIndex = indexByName("season");
-  const scoreIndex = indexByName("undervalued_score");
+  const metricIndex = indexByName(options.metricHeader);
 
-  const topRows = rows
+  let chartRows = rows
     .map((row) => ({
       player: textValue(row, playerIndex),
+      playerId: textValue(row, playerIdIndex),
       season: numericValue(row, seasonIndex),
-      score: numericValue(row, scoreIndex),
+      metric: numericValue(row, metricIndex),
     }))
-    .filter((row) => row.player && Number.isFinite(row.season) && Number.isFinite(row.score))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
+    .filter((row) => row.player && Number.isFinite(row.season) && Number.isFinite(row.metric));
 
-  if (!topRows.length) {
+  chartRows = chartRows.sort((a, b) =>
+    options.mode === "smallest" ? a.metric - b.metric : b.metric - a.metric
+  );
+  chartRows = chartRows.slice(0, options.count || 10);
+
+  if (!chartRows.length) {
     container.innerHTML = '<p class="viz-meta">No rows available for this chart.</p>';
     return;
   }
 
-  const maxScore = Math.max(...topRows.map((row) => row.score), 1);
-  container.innerHTML = topRows
-    .map((row) => {
-      const width = (row.score / maxScore) * 100;
+  const widthBase = Math.max(...chartRows.map((row) => Math.abs(row.metric)), 1);
+  container.innerHTML = chartRows
+    .map((row, index) => {
+      const width = (Math.abs(row.metric) / widthBase) * 100;
+      const safePlayer = escapeHtml(row.player);
+      const playerUrl = getBasketballReferenceUrl(row.playerId);
+      const playerLabel = playerUrl
+        ? `<a class="player-link" href="${playerUrl}" target="_blank" rel="noreferrer">${safePlayer}</a>`
+        : safePlayer;
       return `
         <div class="bar-row">
-          <div class="bar-label">${row.player} (${Math.round(row.season)})</div>
+          <div class="bar-label">${playerLabel} (${Math.round(row.season)})</div>
           <div class="bar-track">
-            <div class="bar-fill" style="width: ${width.toFixed(1)}%"></div>
+            <div class="bar-fill" style="--target-width: ${width.toFixed(1)}%; --bar-delay: ${
+        index * 40
+      }ms;"></div>
           </div>
-          <div class="bar-value">${row.score.toFixed(1)}</div>
+          <div class="bar-value">${row.metric.toFixed(1)}</div>
         </div>
       `;
     })
     .join("");
-}
-
-function renderSeasonTrend(rows) {
-  const svg = document.getElementById("season-trend-chart");
-  const meta = document.getElementById("season-trend-meta");
-  if (!svg || !meta) {
-    return;
-  }
-
-  const seasonIndex = indexByName("season");
-  const scoreIndex = indexByName("undervalued_score");
-  const seasonMap = new Map();
-
-  rows.forEach((row) => {
-    const season = numericValue(row, seasonIndex);
-    const score = numericValue(row, scoreIndex);
-    if (!Number.isFinite(season) || !Number.isFinite(score)) {
-      return;
-    }
-    if (!seasonMap.has(season)) {
-      seasonMap.set(season, { sum: 0, count: 0 });
-    }
-    const current = seasonMap.get(season);
-    current.sum += score;
-    current.count += 1;
-  });
-
-  const points = Array.from(seasonMap.entries())
-    .map(([season, summary]) => ({
-      season,
-      avg: summary.sum / summary.count,
-    }))
-    .sort((a, b) => a.season - b.season);
-
-  if (!points.length) {
-    svg.innerHTML = "";
-    meta.textContent = "No rows available for this chart.";
-    return;
-  }
-
-  const width = 680;
-  const height = 220;
-  const pad = { top: 20, right: 24, bottom: 36, left: 40 };
-  const minSeason = points[0].season;
-  const maxSeason = points[points.length - 1].season;
-  const minAvg = Math.min(...points.map((point) => point.avg));
-  const maxAvg = Math.max(...points.map((point) => point.avg));
-  const seasonSpan = Math.max(1, maxSeason - minSeason);
-  const avgSpan = Math.max(0.001, maxAvg - minAvg);
-
-  const scaleX = (season) =>
-    pad.left + ((season - minSeason) / seasonSpan) * (width - pad.left - pad.right);
-  const scaleY = (avg) =>
-    height - pad.bottom - ((avg - minAvg) / avgSpan) * (height - pad.top - pad.bottom);
-
-  const polyline = points.map((point) => `${scaleX(point.season)},${scaleY(point.avg)}`).join(" ");
-  const circles = points
-    .map(
-      (point) =>
-        `<circle cx="${scaleX(point.season).toFixed(2)}" cy="${scaleY(point.avg).toFixed(2)}" r="2.8"></circle>`
-    )
-    .join("");
-  const midSeason = Math.round((minSeason + maxSeason) / 2);
-  const xTicks = [Math.round(minSeason), midSeason, Math.round(maxSeason)];
-  const yTicks = [minAvg, (minAvg + maxAvg) / 2, maxAvg];
-  const xTickLabels = xTicks
-    .map((season) => {
-      const x = scaleX(season);
-      return `
-        <line x1="${x.toFixed(2)}" y1="${(height - pad.bottom).toFixed(2)}" x2="${x.toFixed(2)}" y2="${(
-        height - pad.bottom + 6
-      ).toFixed(2)}" class="trend-tick"></line>
-        <text x="${x.toFixed(2)}" y="${(height - pad.bottom + 18).toFixed(2)}" text-anchor="middle" class="trend-label">${season}</text>
-      `;
-    })
-    .join("");
-  const yTickLabels = yTicks
-    .map((value) => {
-      const y = scaleY(value);
-      return `
-        <line x1="${(pad.left - 6).toFixed(2)}" y1="${y.toFixed(2)}" x2="${pad.left.toFixed(2)}" y2="${y.toFixed(
-        2
-      )}" class="trend-tick"></line>
-        <text x="${(pad.left - 10).toFixed(2)}" y="${(y + 3).toFixed(2)}" text-anchor="end" class="trend-label">${value.toFixed(
-        1
-      )}</text>
-      `;
-    })
-    .join("");
-
-  svg.innerHTML = `
-    <line x1="${pad.left}" y1="${height - pad.bottom}" x2="${width - pad.right}" y2="${height - pad.bottom}" class="trend-axis"></line>
-    <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}" class="trend-axis"></line>
-    ${xTickLabels}
-    ${yTickLabels}
-    <polyline points="${polyline}" class="trend-line"></polyline>
-    <g class="trend-dots">${circles}</g>
-    <text x="${((pad.left + width - pad.right) / 2).toFixed(2)}" y="${(height - 4).toFixed(2)}" text-anchor="middle" class="trend-axis-title">Season</text>
-    <text x="14" y="${((pad.top + height - pad.bottom) / 2).toFixed(2)}" text-anchor="middle" transform="rotate(-90 14 ${(
-      (pad.top + height - pad.bottom) /
-      2
-    ).toFixed(2)})" class="trend-axis-title">Avg Undervalued Score</text>
-  `;
-
-  meta.textContent = `Seasons ${Math.round(minSeason)}-${Math.round(maxSeason)} | Avg score range ${minAvg.toFixed(1)} to ${maxAvg.toFixed(1)}`;
 }
 
 function applyFiltersAndSort() {
@@ -468,14 +543,22 @@ function applyFiltersAndSort() {
   const seasonMin = parseOptionalNumber(getControlValue("filter-season-min"));
   const seasonMax = parseOptionalNumber(getControlValue("filter-season-max"));
   const minUndervalued = parseOptionalNumber(getControlValue("filter-min-undervalued"));
-  const sortField = getControlValue("sort-field") || state.sortField || "undervalued_score";
+  const fallbackSortField = firstExistingHeader([
+    "undervalued_score_war",
+    "undervalued_score",
+    "value_residual",
+    "expected_cwar",
+    "expected_wins_above_average",
+  ]);
+  const sortField = getControlValue("sort-field") || state.sortField || fallbackSortField;
   const sortDirection = getControlValue("sort-direction") || state.sortDirection || "desc";
   state.sortField = sortField;
   state.sortDirection = sortDirection;
 
   const playerIndex = indexByName("player");
   const seasonIndex = indexByName("season");
-  const undervaluedIndex = indexByName("undervalued_score");
+  const undervaluedHeader = firstExistingHeader(["undervalued_score_war", "undervalued_score"]);
+  const undervaluedIndex = indexByName(undervaluedHeader);
   const sortIndex = indexByName(sortField);
 
   let filtered = state.rows.filter((row) => {
@@ -536,8 +619,8 @@ function applyFiltersAndSort() {
   });
 
   state.filteredRows = filtered;
-  renderTable(state.headers, state.filteredRows, config.csvFile);
-  renderVisualizations(state.filteredRows);
+  renderTable(state.headers, state.filteredRows, state.csvFile);
+  renderVisualizationsFromAllPlayers();
 }
 
 function applyFiltersSortAndResetPage() {
@@ -548,7 +631,7 @@ function applyFiltersSortAndResetPage() {
 function changePage(direction) {
   const totalPages = Math.max(1, Math.ceil(state.filteredRows.length / state.rowsPerPage));
   state.currentPage = Math.min(totalPages, Math.max(1, state.currentPage + direction));
-  renderTable(state.headers, state.filteredRows, config.csvFile);
+  renderTable(state.headers, state.filteredRows, state.csvFile);
 }
 
 function jumpToPage(pageValue) {
@@ -558,7 +641,44 @@ function jumpToPage(pageValue) {
     return;
   }
   state.currentPage = Math.min(totalPages, Math.max(1, Math.floor(page)));
-  renderTable(state.headers, state.filteredRows, config.csvFile);
+  renderTable(state.headers, state.filteredRows, state.csvFile);
+}
+
+async function loadSelectedDataset() {
+  state.csvFile = config.csvFiles[state.datasetScope] || config.csvFiles.non_all_stars;
+  const data = await loadCsv(state.csvFile);
+  const [headers, ...rows] = data;
+  state.headers = headers;
+  state.rows = rows;
+  state.filteredRows = [];
+  state.selectedColumns = new Set(headers.filter((header) => !HIDDEN_COLUMNS.has(header)));
+  renderColumnSelector();
+}
+
+async function loadAllPlayersDataset() {
+  const data = await loadCsv(config.csvFiles.all_players);
+  const [headers, ...rows] = data;
+  state.allPlayersHeaders = headers;
+  state.allPlayersRows = rows;
+}
+
+function renderColumnSelector() {
+  const container = document.getElementById("column-chooser");
+  if (!container) {
+    return;
+  }
+  const baseHeaders = state.headers.filter((header) => !HIDDEN_COLUMNS.has(header));
+  container.innerHTML = baseHeaders
+    .map((header) => {
+      const checked = state.selectedColumns.has(header) ? "checked" : "";
+      return `
+        <label class="column-option">
+          <input type="checkbox" data-column-toggle="${header}" ${checked} />
+          <span>${formatHeaderLabel(header)}</span>
+        </label>
+      `;
+    })
+    .join("");
 }
 
 function wireControls() {
@@ -596,7 +716,11 @@ function wireControls() {
           return;
         }
         if (id === "sort-field") {
-          element.value = "undervalued_score";
+          element.value = firstExistingHeader([
+            "undervalued_score_war",
+            "undervalued_score",
+            "value_residual",
+          ]);
         } else if (id === "sort-direction") {
           element.value = "desc";
         } else if (id === "rows-per-page") {
@@ -607,6 +731,66 @@ function wireControls() {
       });
       state.rowsPerPage = config.defaultRowsPerPage;
       applyFiltersSortAndResetPage();
+    });
+  }
+
+  const datasetScope = document.getElementById("dataset-scope");
+  if (datasetScope) {
+    datasetScope.addEventListener("change", async () => {
+      state.datasetScope = datasetScope.value in config.csvFiles ? datasetScope.value : "non_all_stars";
+      const sortFieldSelect = document.getElementById("sort-field");
+      if (sortFieldSelect) {
+        sortFieldSelect.value = "undervalued_score_war";
+      }
+      const sortDirectionSelect = document.getElementById("sort-direction");
+      if (sortDirectionSelect) {
+        sortDirectionSelect.value = "desc";
+      }
+      const rowsPerPageSelect = document.getElementById("rows-per-page");
+      if (rowsPerPageSelect) {
+        rowsPerPageSelect.value = String(config.defaultRowsPerPage);
+      }
+      ["filter-player", "filter-season-min", "filter-season-max", "filter-min-undervalued"].forEach(
+        (id) => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.value = "";
+          }
+        }
+      );
+      state.rowsPerPage = config.defaultRowsPerPage;
+      state.currentPage = 1;
+      await loadSelectedDataset();
+      applyFiltersSortAndResetPage();
+    });
+  }
+
+  const columnChooser = document.getElementById("column-chooser");
+  if (columnChooser) {
+    columnChooser.addEventListener("change", (event) => {
+      const checkbox = event.target.closest("input[data-column-toggle]");
+      if (!checkbox) {
+        return;
+      }
+      const header = checkbox.dataset.columnToggle;
+      if (!header) {
+        return;
+      }
+      if (checkbox.checked) {
+        state.selectedColumns.add(header);
+      } else {
+        state.selectedColumns.delete(header);
+      }
+      renderTable(state.headers, state.filteredRows, state.csvFile);
+    });
+  }
+
+  const allColumnsButton = document.getElementById("columns-all");
+  if (allColumnsButton) {
+    allColumnsButton.addEventListener("click", () => {
+      state.selectedColumns = new Set(state.headers.filter((header) => !HIDDEN_COLUMNS.has(header)));
+      renderColumnSelector();
+      renderTable(state.headers, state.filteredRows, state.csvFile);
     });
   }
 
@@ -636,7 +820,9 @@ function wireControls() {
       const sortFieldSelect = document.getElementById("sort-field");
       const sortDirectionSelect = document.getElementById("sort-direction");
       if (sortFieldSelect) {
-        sortFieldSelect.value = button.dataset.sortHeader || "undervalued_score";
+        sortFieldSelect.value =
+          button.dataset.sortHeader ||
+          firstExistingHeader(["undervalued_score_war", "undervalued_score", "value_residual"]);
       }
       if (sortDirectionSelect) {
         sortDirectionSelect.value = button.dataset.sortDirection || "desc";
@@ -653,12 +839,12 @@ async function initCsvPreview() {
   }
 
   try {
-    const data = await loadCsv(config.csvFile);
-    const [headers, ...rows] = data;
-    state.headers = headers;
-    state.rows = rows;
+    await Promise.all([loadSelectedDataset(), loadAllPlayersDataset()]);
     state.rowsPerPage = config.defaultRowsPerPage;
-    wireControls();
+    if (!state.controlsWired) {
+      wireControls();
+      state.controlsWired = true;
+    }
     applyFiltersSortAndResetPage();
   } catch (_error) {
     renderFallback("Could not load CSV. Check the file path in app.js.");

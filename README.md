@@ -12,4 +12,6 @@ Portfolio site for `https://mlong2904.github.io`.
 
 ## Projects
 - NBA Undervalued Players Analysis
-  - dataset: `data/market_value_master_1991_2026_non_all_stars.csv`
+  - datasets:
+    - `data/market_value_war_master_1991_2026_non_all_stars.csv`
+    - `data/market_value_war_master_1991_2026.csv`
