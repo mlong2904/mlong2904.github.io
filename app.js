@@ -512,7 +512,7 @@ function renderRankedBars(rows, options) {
 
   const widthBase = Math.max(...chartRows.map((row) => Math.abs(row.metric)), 1);
   container.innerHTML = chartRows
-    .map((row, index) => {
+    .map((row) => {
       const width = (Math.abs(row.metric) / widthBase) * 100;
       const safePlayer = escapeHtml(row.player);
       const playerUrl = getBasketballReferenceUrl(row.playerId);
@@ -523,9 +523,7 @@ function renderRankedBars(rows, options) {
         <div class="bar-row">
           <div class="bar-label">${playerLabel} (${Math.round(row.season)})</div>
           <div class="bar-track">
-            <div class="bar-fill" style="--target-width: ${width.toFixed(1)}%; --bar-delay: ${
-        index * 40
-      }ms;"></div>
+            <div class="bar-fill" style="width: ${width.toFixed(1)}%;"></div>
           </div>
           <div class="bar-value">${row.metric.toFixed(1)}</div>
         </div>
