@@ -3,11 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Matthew Long | NBA Undervalued Players</title>
+    <title>Undervalued NBA Players | Matthew Long</title>
     <meta
       name="description"
-      content="Detailed portfolio page for NBA undervalued players analysis."
+      content="An end-to-end NBA analytics pipeline that predicts team wins, attributes player impact, builds a custom cWAR metric and identifies undervalued player-seasons through 2025-26."
     />
+    <meta property="og:title" content="Undervalued NBA Players | Matthew Long" />
+    <meta
+      property="og:description"
+      content="Explore the methodology, interactive rankings and open-source pipeline behind a custom NBA player-value model."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mlong2904.github.io/project-undervalued-players.html" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Undervalued NBA Players | Matthew Long" />
+    <meta
+      name="twitter:description"
+      content="An open-source NBA analytics pipeline with custom cWAR and interactive player-value rankings."
+    />
+    <link rel="canonical" href="https://mlong2904.github.io/project-undervalued-players.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,39 +40,88 @@
           <a class="nav-link" href="index.html">Home</a>
           <a class="nav-link" href="projects.html">Projects</a>
           <a class="nav-link is-active" href="project-undervalued-players.html">Undervalued Players</a>
+          <a class="nav-link" href="resume.html">Resume</a>
           <a class="nav-link" href="https://www.linkedin.com/in/mjslong/" target="_blank" rel="noreferrer">LinkedIn</a>
           <a class="nav-link" href="https://github.com/mlong2904" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
 
-        <p class="eyebrow">Project Detail</p>
-        <h1>NBA Undervalued Players Analysis</h1>
+        <p class="eyebrow">Machine Learning &middot; Sports Analytics &middot; Python</p>
+        <h1>Undervalued NBA Players</h1>
         <p class="lede">
-          A market-value model for identifying players who outperformed expectations based on
-          wins above average and prior-season context.
+          An end-to-end basketball analytics pipeline that predicts team wins, attributes impact
+          to players, builds a custom wins-above-replacement metric and surfaces player-seasons
+          that beat model expectations.
         </p>
+        <div class="hero-cta">
+          <a class="button" href="#explore-data">Explore the Data</a>
+          <a class="button" href="https://github.com/mlong2904/Undervalued-NBA-Players" target="_blank" rel="noreferrer">View Repository</a>
+          <a class="button" href="data/market_value_war_master_1991_2026_non_all_stars.csv">Download CSV</a>
+        </div>
       </header>
 
       <section class="panel">
-        <h2>Overview</h2>
+        <p class="eyebrow">Project Overview</p>
+        <h2>From team outcomes to player value</h2>
         <p>
-          This analysis covers NBA seasons from 1991 to 2026 and focuses on non-All-Star
-          players but visualizations are extended to all players. The core output is an <code>undervalued_score</code> that highlights players
-          creating more impact than expected by the model.
+          The project turns historical team and player data into a reproducible modeling
+          workflow. Alongside a previous-season team wins forecast, it distributes team-level
+          performance to players and measures each player against a replacement baseline. A final expectation model asks
+          which player-seasons produced more value than their playing time, prior performance and
+          career context suggested.
         </p>
+        <div class="project-facts" aria-label="Project facts">
+          <div><strong>1991&ndash;2026</strong><span>ranking window</span></div>
+          <div><strong>2025&ndash;26</strong><span>latest complete season</span></div>
+          <div><strong>4 modeling stages</strong><span>wins to value ranking</span></div>
+          <div><strong>Open source</strong><span>MIT-licensed code</span></div>
+        </div>
         <div class="stat-row" id="csv-stats">
           <span class="stat-pill">Waiting for CSV</span>
         </div>
       </section>
 
       <section class="panel">
-        <h2>Data Source</h2>
+        <p class="eyebrow">Pipeline</p>
+        <h2>How the analysis connects</h2>
+        <div class="pipeline-grid">
+          <article>
+            <span>01</span>
+            <h3>Predict wins</h3>
+            <p>A random forest forecasts team wins from lagged, previous-season team inputs.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Attribute impact</h3>
+            <p>A Ridge model maps minute-weighted player rate statistics to team results.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Build cWAR</h3>
+            <p>Wins above average are converted into a durable, replacement-level value metric.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Find outperformance</h3>
+            <p>Actual cWAR is compared with expected cWAR, then weighted for meaningful minutes.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">Data &amp; Reproducibility</p>
+        <h2>Built to be rerun and audited</h2>
         <ul class="clean-list">
-          <li>Dataset: Kaggle <code>sumitrodatta/nba-aba-baa-stats</code></li>
-          <li>Files used: Team Summaries, Player Totals, Advanced, All-Star Selections</li>
-          <li>Scope: 1991-2026 (non-All-Star and all-player variants)</li>
-          <li>Main metrics: <code>wins_above_average</code>, <code>cwar</code>, <code>expected_*</code>, <code>value_residual</code>, <code>undervalued_score*</code></li>
-          <li>Project files: <code>data/market_value_war_master_1991_2026_non_all_stars.csv</code> and <code>data/market_value_war_master_1991_2026.csv</code></li>
+          <li>Source: Sumitro Datta's <a href="https://www.kaggle.com/datasets/sumitrodatta/nba-aba-baa-stats" target="_blank" rel="noreferrer">NBA, ABA, BAA Stats dataset</a> on Kaggle.</li>
+          <li>Inputs: <code>Team Summaries</code>, <code>Player Totals</code>, <code>Advanced</code> and <code>All-Star Selections</code>.</li>
+          <li>Stack: Python 3.10+, pandas, scikit-learn, NumPy, Matplotlib, joblib and KaggleHub.</li>
+          <li>Scope: player-season rankings from 1991 through the completed 2025&ndash;26 season, with both all-player and non-All-Star variants.</li>
+          <li>Guardrail: the 2026 build stops unless all 30 NBA teams have 82 regular-season games, preventing partial-season data from being labeled final.</li>
+          <li>Artifacts: model metrics, player contributions, cWAR tables, validation reports, current-season impact rankings, charts and shareable visuals.</li>
         </ul>
+        <div class="button-row">
+          <a class="button" href="https://github.com/mlong2904/Undervalued-NBA-Players#quick-start" target="_blank" rel="noreferrer">Rebuild Instructions</a>
+          <a class="button" href="https://github.com/mlong2904/Undervalued-NBA-Players#main-outputs" target="_blank" rel="noreferrer">Output Reference</a>
+        </div>
         <details class="data-dictionary">
           <summary>Column Definitions</summary>
           <ul class="clean-list">
@@ -67,21 +130,26 @@
             <li><code>Team</code>: Team abbreviation for that season.</li>
             <li><code>Games</code>: Games played.</li>
             <li><code>Minutes per Game</code>: Minutes per game (<code>mp / g</code>).</li>
-            <li><code>cWAR</code>: Context-adjusted wins above replacement.</li>
+            <li><code>cWAR</code>: This project's custom wins-above-replacement estimate.</li>
             <li><code>Prev cWAR</code>: Prior season cWAR (0 if unavailable).</li>
             <li><code>Prev Minutes</code>: Prior season minutes played (0 if unavailable).</li>
             <li><code>Prev Games</code>: Prior season games played (0 if unavailable).</li>
             <li><code>Career Season #</code>: Career season number in dataset (<code>1</code> = first season).</li>
             <li><code>Expected cWAR</code>: Model-expected cWAR.</li>
-            <li><code>Value Residual</code>: <code>cwar - expected_cwar</code> style gap in observed vs expected value.</li>
-            <li><code>Undervalued Score (WAR)</code>: WAR-based undervalued score from residual and minutes context.</li>
+            <li><code>Value Residual</code>: Observed cWAR minus model-expected cWAR.</li>
+            <li><code>Undervalued Score (WAR)</code>: Value residual adjusted by the square root of minutes per 1,000.</li>
             <li><code>Season Residual Z</code>: Within-season z-score of value residual.</li>
           </ul>
         </details>
       </section>
 
-      <section class="panel">
-        <h2>Analysis</h2>
+      <section class="panel" id="explore-data">
+        <p class="eyebrow">Interactive Results</p>
+        <h2>Explore player-season rankings</h2>
+        <p>
+          The charts and table below load the cWAR-based ranking output directly. Switch between
+          non-All-Stars and all players, then filter, sort and choose columns to inspect the model.
+        </p>
         <div class="analysis-block">
           <h3>Visualizations</h3>
           <div class="viz-grid">
@@ -116,7 +184,15 @@
           <details class="methodology-item">
             <summary>Open Methodology</summary>
             <div class="methodology-content">
-              <h4>A) Player Wins Contribution </h4>
+              <h4>A) Previous-Season Team Wins Predictor</h4>
+              <ol class="clean-list">
+                <li>Discover the team-season source table containing the wins target.</li>
+                <li>Shift available team inputs back one season within each franchise so future results do not leak into the predictors.</li>
+                <li>Use the oldest 80% of observations for training and the newest 20% for chronological evaluation.</li>
+                <li>Fit a preprocessing and random-forest pipeline, then save the model and its MAE, RMSE and R&sup2; metrics.</li>
+              </ol>
+
+              <h4>B) Player Wins Contribution</h4>
               <ol class="clean-list">
                 <li>Build player feature table from <code>Player Totals.csv</code> + <code>Advanced.csv</code>.</li>
                 <li>
@@ -129,7 +205,7 @@
                   <br />
                   <code>contrib_feature = mp_share * player_feature</code>
                 </li>
-                <li>Train Ridge model to predict team wins (<code>w</code>) from weighted team features.</li>
+                <li>Train a Ridge model to predict team wins (<code>w</code>) from weighted team features using a chronological 80/20 split.</li>
                 <li>
                   Convert team prediction back to players:
                   <br />
@@ -161,7 +237,7 @@
                 </li>
               </ol>
 
-              <h4>B) Salary-Free Undervalued Model </h4>
+              <h4>C) Salary-Free Undervalued Model</h4>
               <ol class="clean-list">
                 <li>Aggregate to one row per player-season.</li>
                 <li>
@@ -184,7 +260,7 @@
                 </li>
               </ol>
 
-              <h4>C) Custom WAR Table </h4>
+              <h4>D) Custom cWAR Table</h4>
               <p class="viz-meta">
                 This WAR is built from project metrics, not Basketball-Reference
                 <code>ows/dws</code>.
@@ -221,7 +297,7 @@
                 </li>
               </ol>
 
-              <h4>D) WAR-Based Undervalued Model </h4>
+              <h4>E) cWAR-Based Undervalued Model</h4>
               <ol class="clean-list">
                 <li>Use <code>nba_war_player_seasons.csv</code> as the input feature table.</li>
                 <li>
@@ -243,6 +319,23 @@
             </div>
           </details>
         </div>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">Validation &amp; Interpretation</p>
+        <h2>Useful signal, with explicit boundaries</h2>
+        <p>
+          The repository tests team cWAR against team wins on a chronological holdout, prior-year
+          team cWAR against next-season wins, player cWAR against Win Shares, BPM, VORP and WS/48,
+          and year-to-year player stability. These checks evaluate association and predictive
+          usefulness; they do not prove that cWAR isolates causal player impact.
+        </p>
+        <ul class="clean-list">
+          <li><strong>Project-specific metric:</strong> cWAR is not Basketball-Reference WAR, Win Shares, VORP, RAPTOR, EPM or an official NBA statistic.</li>
+          <li><strong>Model meaning:</strong> “undervalued” means outperforming the model's expectation, not necessarily being underpaid.</li>
+          <li><strong>Data limits:</strong> box-score inputs cannot fully capture lineup, matchup, coaching or possession-level effects.</li>
+          <li><strong>Use:</strong> the results are research and educational analysis, not official player evaluations or personnel advice.</li>
+        </ul>
       </section>
 
       <section class="table-panel" aria-live="polite">

@@ -12,7 +12,9 @@ Portfolio site for `https://mlong2904.github.io`.
 - `data/` - local datasets used by project pages
 
 ## Projects
-- NBA Undervalued Players Analysis
+- Undervalued NBA Players
+  - source project: https://github.com/mlong2904/Undervalued-NBA-Players
+  - scope: end-to-end team wins, player contribution, custom cWAR and value-ranking pipeline
   - datasets:
     - `data/market_value_war_master_1991_2026_non_all_stars.csv`
     - `data/market_value_war_master_1991_2026.csv`

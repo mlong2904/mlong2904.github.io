@@ -149,7 +149,24 @@ h3 {
 
 .hero-cta {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.resume-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.resume-viewer {
+  width: 100%;
+  min-height: 75svh;
+  margin-top: 0.75rem;
+  border: 1px solid var(--ring);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .panel {
@@ -159,6 +176,11 @@ h3 {
 .panel p {
   margin: 0.6rem 0 0;
   line-height: 1.52;
+}
+
+.panel .eyebrow + h2,
+.project-card .eyebrow + h2 {
+  margin-top: 0.35rem;
 }
 
 .product-gallery {
@@ -293,6 +315,63 @@ h3 {
   font-size: 0.85rem;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.55);
+}
+
+.project-facts {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 0.65rem;
+}
+
+.project-facts div,
+.pipeline-grid article {
+  border: 1px solid var(--ring);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.project-facts div {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.project-facts strong {
+  font-size: 1rem;
+}
+
+.project-facts span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.pipeline-grid {
+  margin-top: 0.85rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.65rem;
+}
+
+.pipeline-grid article {
+  padding: 0.75rem;
+}
+
+.pipeline-grid article > span {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.pipeline-grid h3 {
+  margin-top: 0.3rem;
+  font-size: 1rem;
+}
+
+.pipeline-grid p {
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .viz-grid {
