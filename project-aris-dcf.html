@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matthew Long | Aris Mining DCF Valuation</title>
+    <meta
+      name="description"
+      content="Discounted cash flow valuation of Aris Mining Corporation (NYSE/TSX: ARIS), built from audited filings as a reproducible Python model."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght@9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+
+    <main class="shell shell-left">
+      <header class="hero">
+        <nav class="site-nav" aria-label="Primary">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="projects.html">Projects</a>
+          <a class="nav-link is-active" href="project-aris-dcf.html">Aris DCF</a>
+          <a class="nav-link" href="https://www.linkedin.com/in/mjslong/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a class="nav-link" href="https://github.com/mlong2904" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+
+        <p class="eyebrow">Project Detail</p>
+        <h1>Aris Mining DCF Valuation</h1>
+        <p class="lede">
+          An intrinsic-value discounted cash flow model for Aris Mining Corporation
+          (NYSE/TSX: ARIS), built from audited filings and company-specific operating drivers,
+          and delivered as a reproducible Python model, a formula-driven Excel workbook and an
+          executable notebook.
+        </p>
+        <div class="button-row">
+          <a class="button" href="https://github.com/mlong2904/dcfvaluations" target="_blank" rel="noreferrer">View Repository</a>
+          <a class="button" href="https://github.com/mlong2904/dcfvaluations/tree/main/aris" target="_blank" rel="noreferrer">Model Folder</a>
+          <a class="button" href="data/aris/valuation_summary.csv">Valuation Summary CSV</a>
+        </div>
+      </header>
+
+      <section class="panel">
+        <h2>Headline Result</h2>
+        <p>
+          Valuation date <strong>5 August 2026</strong>. Reporting currency USD. Base-case
+          intrinsic value of <strong>$14.65 per share</strong> against a market price of
+          $15.91 &mdash; roughly <strong>7.9% downside</strong>, so the conclusion is
+          <strong>approximately fairly valued</strong>. The market sits at the 55th percentile
+          of the low-to-high range.
+        </p>
+        <div class="stat-row">
+          <span class="stat-pill">Low $4.23</span>
+          <span class="stat-pill">Base $14.65</span>
+          <span class="stat-pill">High $25.34</span>
+          <span class="stat-pill">Market $15.91</span>
+          <span class="stat-pill">WACC 12.17%</span>
+          <span class="stat-pill">Cost of equity 13.40%</span>
+          <span class="stat-pill">EV $3,432m</span>
+          <span class="stat-pill">Equity $3,063m</span>
+          <span class="stat-pill">209.1m diluted shares</span>
+        </div>
+        <div class="range-bar" aria-label="Valuation range from $4.23 low to $25.34 high, base case $14.65, market price $15.91">
+          <div class="range-track">
+            <span class="range-marker range-base" style="left: 49.4%"><em>Base $14.65</em></span>
+            <span class="range-marker range-market" style="left: 55.3%"><em>Market $15.91</em></span>
+          </div>
+          <div class="range-ends">
+            <span>Low $4.23</span>
+            <span>High $25.34</span>
+          </div>
+        </div>
+        <p class="viz-meta">
+          The dominant uncertainty is the long-run gold price: a &plusmn;$600/oz move in the
+          long-run anchor swings value by $10.80 per share, roughly five times the next largest
+          driver. This is a gold price call wearing a company's clothes.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>What Makes the Model Company-Specific</h2>
+        <ul class="clean-list">
+          <li>
+            <strong>Segovia's dual mining model is preserved.</strong> Owner Mining is guided on
+            AISC per ounce; the Contract Mining Partners (~33% of mill feed) are guided on an
+            AISC sales <em>margin percentage</em>, so their cost per ounce is
+            <code>price &times; (1 &minus; margin)</code> and rises <em>with</em> gold. Blending
+            the two into one dollar cost would materially overstate gold leverage.
+          </li>
+          <li>
+            <strong>The projection is driven off AISC</strong>, the metric management actually
+            guides. The identity
+            <code>cost of sales = AISC + by-product revenue &minus; social contributions &minus; sustaining capital</code>
+            reconciles to the audited FY2025 figure exactly
+            (472.768 + 20.019 &minus; 27.446 &minus; 50.835 = 414.506).
+          </li>
+          <li>
+            <strong>Finite mine life, no perpetuity.</strong> Production is capped by mineable
+            inventory; Segovia depletes in 2037 and Marmato in 2041. Depreciation is
+            units-of-production and drives the asset base to exactly zero as the orebody is
+            exhausted. A Gordon-growth value is reported only as a cross-check (it would add
+            $4.76 per share).
+          </li>
+          <li>
+            <strong>Growth projects are options, not assets.</strong> Soto Norte and Toroparu
+            are excluded from the core DCF and valued separately at WACC + 2%, then
+            probability-weighted (40% / 35%). Both unrisked and risked numbers are disclosed.
+          </li>
+          <li>
+            <strong>Debt-like items beyond borrowings are deducted</strong> &mdash; lease
+            liabilities, $200.8m of contract liabilities (gold prepay and stream obligations)
+            and the $34.8m reclamation provision.
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Analysis</h2>
+
+        <div class="analysis-block">
+          <h3>Visualizations</h3>
+          <div class="viz-grid">
+            <details class="viz-item" open>
+              <summary>Driver Tornado &mdash; swing in value per share</summary>
+              <div class="bar-chart bar-chart-wide">
+                <div class="bar-row">
+                  <span class="bar-label">Long-run gold price (&plusmn;$600/oz)</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 100%"></div></div>
+                  <span class="bar-value">$10.80</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Production (&plusmn;10%)</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 20.1%"></div></div>
+                  <span class="bar-value">$2.18</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Marmato cash cost (&plusmn;$250/oz)</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 19.3%"></div></div>
+                  <span class="bar-value">$2.09</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Beta (&plusmn;0.20)</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 14.8%"></div></div>
+                  <span class="bar-value">$1.60</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Tax rate (&plusmn;3pp)</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 13.0%"></div></div>
+                  <span class="bar-value">$1.41</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Segovia Owner cash cost (&plusmn;10%)</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 8.8%"></div></div>
+                  <span class="bar-value">$0.95</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Marmato ramp delayed one year</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 7.8%"></div></div>
+                  <span class="bar-value">$0.85</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Growth capital (&plusmn;20%)</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 7.6%"></div></div>
+                  <span class="bar-value">$0.83</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">CMP AISC sales margin (&plusmn;5pp)</span>
+                  <div class="bar-track"><div class="bar-fill" style="width: 7.0%"></div></div>
+                  <span class="bar-value">$0.76</span>
+                </div>
+                <p class="viz-meta">
+                  Bars are scaled to the largest swing. Full grid:
+                  <a class="player-link" href="data/aris/driver_tornado.csv">driver_tornado.csv</a>
+                </p>
+              </div>
+            </details>
+
+            <details class="viz-item">
+              <summary>Scenarios &mdash; low / base / high</summary>
+              <div class="table-wrap table-wrap-auto">
+                <table class="static-table">
+                  <thead>
+                    <tr>
+                      <th>Scenario</th>
+                      <th>Gold anchor</th>
+                      <th>Beta</th>
+                      <th>WACC</th>
+                      <th>Enterprise value</th>
+                      <th>Equity value</th>
+                      <th>Value / share</th>
+                      <th>vs market</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Low</td>
+                      <td>$2,700/oz</td>
+                      <td>1.55</td>
+                      <td>12.86%</td>
+                      <td>$1,254m</td>
+                      <td>$885m</td>
+                      <td>$4.23</td>
+                      <td>&minus;73.4%</td>
+                    </tr>
+                    <tr>
+                      <td>Base</td>
+                      <td>$3,300/oz</td>
+                      <td>1.35</td>
+                      <td>12.17%</td>
+                      <td>$3,432m</td>
+                      <td>$3,063m</td>
+                      <td>$14.65</td>
+                      <td>&minus;7.9%</td>
+                    </tr>
+                    <tr>
+                      <td>High</td>
+                      <td>$4,000/oz</td>
+                      <td>1.20</td>
+                      <td>11.65%</td>
+                      <td>$5,669m</td>
+                      <td>$5,300m</td>
+                      <td>$25.34</td>
+                      <td>+59.3%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="viz-meta">
+                Drivers are linked, not flexed one at a time: the low case combines gold
+                reverting toward the incentive price, a one-year Marmato ramp slip, cost
+                inflation ahead of the deck, capital overruns and a higher tax rate. Beta is
+                flexed per scenario, so each case carries its own discount rate. Full detail:
+                <a class="player-link" href="data/aris/scenario_summary.csv">scenario_summary.csv</a>
+              </p>
+            </details>
+
+            <details class="viz-item">
+              <summary>Equity bridge &mdash; enterprise value to value per share</summary>
+              <div class="table-wrap table-wrap-auto">
+                <table class="static-table">
+                  <tbody>
+                    <tr><td>Present value of mine-life FCFF (2026&ndash;2045)</td><td class="num">$2,821m</td></tr>
+                    <tr><td>Roll-forward to 2026-08-05 at WACC</td><td class="num">$199m</td></tr>
+                    <tr><td>Enterprise value, core producing assets</td><td class="num">$3,020m</td></tr>
+                    <tr><td>Risk-weighted value of Soto Norte and Toroparu</td><td class="num">$412m</td></tr>
+                    <tr><td><strong>Total enterprise value</strong></td><td class="num"><strong>$3,432m</strong></td></tr>
+                    <tr><td>Less: borrowings</td><td class="num">&minus;$519.5m</td></tr>
+                    <tr><td>Add: cash and cash equivalents</td><td class="num">+$391.9m</td></tr>
+                    <tr><td>Less: lease liabilities</td><td class="num">&minus;$6.1m</td></tr>
+                    <tr><td>Less: contract liabilities (gold prepay and streams)</td><td class="num">&minus;$200.8m</td></tr>
+                    <tr><td>Less: reclamation provisions</td><td class="num">&minus;$34.8m</td></tr>
+                    <tr><td><strong>Equity value</strong></td><td class="num"><strong>$3,063m</strong></td></tr>
+                    <tr><td>Diluted shares outstanding</td><td class="num">209.1m</td></tr>
+                    <tr><td><strong>Intrinsic value per share</strong></td><td class="num"><strong>$14.65</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="viz-meta">
+                Source: <a class="player-link" href="data/aris/equity_bridge.csv">equity_bridge.csv</a>
+              </p>
+            </details>
+
+            <details class="viz-item">
+              <summary>Sensitivity &mdash; long-run gold anchor vs AISC</summary>
+              <div class="table-wrap table-wrap-auto">
+                <table class="static-table">
+                  <thead>
+                    <tr>
+                      <th>Gold anchor (2030 real)</th>
+                      <th>AISC 90%</th>
+                      <th>95%</th>
+                      <th>100%</th>
+                      <th>105%</th>
+                      <th>110%</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>$2,700</td><td class="num">$10.34</td><td class="num">$9.86</td><td class="num">$9.37</td><td class="num">$8.87</td><td class="num">$8.37</td></tr>
+                    <tr><td>$3,000</td><td class="num">$13.05</td><td class="num">$12.57</td><td class="num">$12.09</td><td class="num">$11.61</td><td class="num">$11.13</td></tr>
+                    <tr class="is-base"><td>$3,300 (base)</td><td class="num">$15.60</td><td class="num">$15.12</td><td class="num">$14.65</td><td class="num">$14.17</td><td class="num">$13.69</td></tr>
+                    <tr><td>$3,600</td><td class="num">$18.43</td><td class="num">$17.96</td><td class="num">$17.48</td><td class="num">$17.01</td><td class="num">$16.53</td></tr>
+                    <tr><td>$4,000</td><td class="num">$22.01</td><td class="num">$21.54</td><td class="num">$21.06</td><td class="num">$20.59</td><td class="num">$20.11</td></tr>
+                    <tr><td>$4,300</td><td class="num">$24.70</td><td class="num">$24.22</td><td class="num">$23.75</td><td class="num">$23.27</td><td class="num">$22.80</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="viz-meta">
+                Value per share. Two further grids &mdash;
+                <a class="player-link" href="data/aris/sensitivity_gold_production.csv">gold vs production</a>
+                and <a class="player-link" href="data/aris/sensitivity_wacc_terminal.csv">WACC vs terminal growth</a>
+                &mdash; are in the repository. The WACC grid is a cross-check only; the headline
+                model has no perpetuity.
+              </p>
+            </details>
+
+            <details class="viz-item">
+              <summary>Cost of capital</summary>
+              <div class="table-wrap table-wrap-auto">
+                <table class="static-table">
+                  <thead>
+                    <tr><th>Component</th><th>Value</th><th>Basis</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Risk-free rate</td><td class="num">4.70%</td><td>FRED <code>DGS10</code>, observed 2026-08-03</td></tr>
+                    <tr><td>Equity risk premium</td><td class="num">4.30%</td><td>Damodaran implied mature-market premium</td></tr>
+                    <tr><td>Beta (levered)</td><td class="num">1.35</td><td>Forward estimate; Yahoo's 1.94 spans the merger and warrant overhang</td></tr>
+                    <tr><td>Country risk premium (Colombia)</td><td class="num">2.89%</td><td>Applied in full &mdash; all producing assets are Colombian</td></tr>
+                    <tr><td><strong>Cost of equity</strong></td><td class="num"><strong>13.40%</strong></td><td>Rf + &beta; &times; ERP + CRP</td></tr>
+                    <tr><td>Pre-tax cost of debt</td><td class="num">8.00%</td><td>Coupon on the US$450m 2029 senior unsecured notes</td></tr>
+                    <tr><td>Normalised tax rate</td><td class="num">35%</td><td>Colombian statutory; reported effective rate is distorted</td></tr>
+                    <tr><td>Target gearing (D / E)</td><td class="num">15% / 85%</td><td>Market gearing at the valuation date is only ~9%</td></tr>
+                    <tr><td><strong>WACC</strong></td><td class="num"><strong>12.17%</strong></td><td>We &times; Ke + Wd &times; Kd &times; (1 &minus; t)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="viz-meta">
+                Source: <a class="player-link" href="data/aris/wacc_components.csv">wacc_components.csv</a>
+              </p>
+            </details>
+          </div>
+        </div>
+
+        <div class="analysis-block">
+          <h3>Methodology</h3>
+          <details class="methodology-item">
+            <summary>Open Methodology</summary>
+            <div class="methodology-content">
+              <h4>A) Historical Financials</h4>
+              <ol class="clean-list">
+                <li>Pull audited FY2022&ndash;FY2025 statements from SEC XBRL <code>companyfacts</code>, CIK 0001964504, under the <code>ifrs-full</code> taxonomy &mdash; Aris tags its 40-F under IFRS, not US GAAP.</li>
+                <li>Parse H1 2026 interims, operating KPIs and guidance from the 6-K HTML exhibits; the 2026 interims carry no XBRL facts at all.</li>
+                <li>Validate units, dates and NaN propagation before anything downstream runs.</li>
+              </ol>
+
+              <h4>B) Operating Model</h4>
+              <ol class="clean-list">
+                <li>Model production per stream (Segovia Owner Mining, Contract Mining Partners, Marmato) against mineable inventory rather than a growth rate.</li>
+                <li>Build a real gold price deck fading to a long-run anchor of <code>$3,300/oz</code> in 2030.</li>
+                <li>Unit costs: Owner Mining on AISC per ounce; CMP on an AISC sales margin, so <code>cost/oz = price &times; (1 &minus; margin)</code>.</li>
+                <li>Depletion is units-of-production, driving the depletable asset base to exactly zero at end of mine life.</li>
+              </ol>
+
+              <h4>C) Pro Forma Statements</h4>
+              <ol class="clean-list">
+                <li>Integrated income statement, balance sheet and cash flow statement with explicit roll-forwards for cash, debt and PP&amp;E.</li>
+                <li>The contract liability unwinds as non-cash revenue in the cash flow statement.</li>
+                <li>Balance sheet identity is asserted every projected year, not assumed.</li>
+              </ol>
+
+              <h4>D) Discounting and the Equity Bridge</h4>
+              <ol class="clean-list">
+                <li><code>FCFF = NOPAT + D&amp;A &minus; sustaining capex &minus; growth capex &minus; &Delta;NWC</code>, discounted at WACC with mid-year convention.</li>
+                <li>No perpetuity: value ends when the orebody does. Gordon growth is reported only as a cross-check (+$4.76 per share).</li>
+                <li>Growth projects valued separately at WACC + 2% and probability-weighted (Soto Norte 40%, Toroparu 35%).</li>
+                <li>Bridge to equity by deducting borrowings, leases, contract liabilities and reclamation provisions, and adding cash.</li>
+              </ol>
+
+              <h4>E) Scenarios and Sensitivity</h4>
+              <ol class="clean-list">
+                <li>Low / base / high flex linked drivers together (gold, production, costs, ramp timing, capital, tax, beta) so each case is internally coherent.</li>
+                <li>Three two-dimensional grids plus a one-at-a-time driver tornado isolate what actually matters.</li>
+              </ol>
+
+              <h4>F) Verification</h4>
+              <p class="viz-meta">
+                Every assumption is labelled <code>fact</code> (audited filing),
+                <code>guidance</code> (published management guidance) or <code>analyst</code>
+                (modeller's judgement), so a reviewer can sort by basis and see immediately
+                which numbers are opinion. Failures are printed, never suppressed.
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <div class="analysis-block">
+          <h3>Verification Status</h3>
+          <div class="stat-row">
+            <span class="stat-pill">Data validation 46 / 46</span>
+            <span class="stat-pill">Model integrity 27 / 27</span>
+            <span class="stat-pill">Python &harr; CSV &harr; Excel 14 / 14</span>
+            <span class="stat-pill">Tests 78 / 78</span>
+            <span class="stat-pill">Notebook 0 errors</span>
+            <span class="stat-pill">Balance sheet &lt; 1e-10 USD m</span>
+            <span class="stat-pill">PP&amp;E fully depleted 0.000000</span>
+          </div>
+          <p class="viz-meta">
+            Several tests deliberately corrupt an input and assert that the relevant check
+            <em>fires</em> &mdash; a check that cannot fail is not a check.
+            <code>--offline</code> mode rebuilds the valuation bit-for-bit from preserved raw
+            data with no network access, and a look-ahead guard fails loudly rather than
+            silently using future prices. Full results:
+            <a class="player-link" href="data/aris/model_checks.csv">model_checks.csv</a>
+          </p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>The Three Assumptions to Argue With</h2>
+        <div class="table-wrap table-wrap-auto">
+          <table class="static-table">
+            <thead>
+              <tr><th>Assumption</th><th>Model value</th><th>If you reject it</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Long-run gold anchor</td>
+                <td>$3,300/oz real (2030)</td>
+                <td>$2,700 &rarr; <strong>$9.37</strong>; $4,300 &rarr; <strong>$23.75</strong></td>
+              </tr>
+              <tr>
+                <td>Segovia resource conversion</td>
+                <td>60% of M&amp;I, 25% of inferred</td>
+                <td>Reserves only &rarr; <strong>$10.89</strong> (Segovia ends 2030, not 2037)</td>
+              </tr>
+              <tr>
+                <td>Beta</td>
+                <td>1.35 (Yahoo's 5-yr regression is 1.94)</td>
+                <td>Beta 1.94 &rarr; <strong>$12.54</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Note the direction: the two most attackable choices &mdash; fading the gold deck and
+          applying Colombia's country risk premium in full &mdash; both <em>lower</em> the
+          valuation, and conceding the beta argument lowers it too. The "approximately fairly
+          valued" conclusion is robust to losing these arguments.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Data Sources</h2>
+        <ul class="clean-list">
+          <li>Audited financials FY2022&ndash;FY2025: SEC XBRL <code>companyfacts</code>, CIK 0001964504, <code>ifrs-full</code> taxonomy</li>
+          <li>FY2025 annual report, AIF and MD&amp;A: Form 40-F filed 2026-03-11</li>
+          <li>H1 2026 interims, operating KPIs and guidance: Form 6-K filed 2026-07-29</li>
+          <li>Risk-free rate and inflation: FRED <code>DGS10</code>, <code>DGS20</code>, <code>DFII10</code>, <code>T10YIE</code>, <code>CPIAUCSL</code></li>
+          <li>Price, share count, beta, gold: Yahoo Finance (<code>ARIS</code>, <code>GC=F</code>) &mdash; market observables only, never reported financial statements</li>
+          <li>Equity and country risk premia: Damodaran datasets</li>
+        </ul>
+        <p class="viz-meta">
+          Every external datum carries a source id, URL, observation date, units and any
+          transformation applied:
+          <a class="player-link" href="data/aris/source_register.csv">source_register.csv</a>.
+          Every assumption is tagged by basis in
+          <a class="player-link" href="data/aris/assumptions_ledger.csv">assumptions_ledger.csv</a>.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Known Limitations</h2>
+        <ul class="clean-list">
+          <li><strong>Segovia's reserve life is five years.</strong> The model credits resource conversion to reach twelve. That is judgement, worth $3.75 per share, and is run both ways.</li>
+          <li><strong>Marmato's cost target is unproven.</strong> Unit costs must fall from ~$2,542/oz to ~$1,150/oz, and first gold is only expected Q4 2026.</li>
+          <li><strong>The WACC assumes constant target gearing while the assets deplete.</strong> Borrowings are held flat then amortised to zero; the tension is inherent to applying a perpetual capital structure to a finite asset.</li>
+          <li><strong>Colombia's gold surtax is not modelled explicitly.</strong> The 35% rate may understate the marginal rate at high gold prices; the low case uses 38%.</li>
+          <li><strong>Growth-project economics are analyst estimates.</strong> Capital and production for Soto Norte and Toroparu are not taken from a published feasibility study.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Reproducing It</h2>
+        <ul class="clean-list">
+          <li><code>pip install -r requirements.txt</code>, then <code>cd aris &amp;&amp; python main.py</code> rebuilds every artefact: CSVs, charts, the Excel workbook and the reconciliation.</li>
+          <li><code>python main.py --offline</code> rebuilds from preserved raw data with no network access and must match the online run exactly.</li>
+          <li><code>pytest tests/ -v</code> runs 78 tests, no network required.</li>
+          <li><code>outputs/aris_dcf_model.xlsx</code> is formula-driven on the valuation path across 24 tabs &mdash; change the WACC or share count and the answer moves.</li>
+        </ul>
+        <div class="button-row">
+          <a class="button" href="https://github.com/mlong2904/dcfvaluations" target="_blank" rel="noreferrer">Repository</a>
+          <a class="button" href="https://github.com/mlong2904/dcfvaluations/blob/main/aris/README.md" target="_blank" rel="noreferrer">Model README</a>
+          <a class="button" href="https://github.com/mlong2904/dcfvaluations/blob/main/aris/notebooks/aris_mining_dcf_executed.ipynb" target="_blank" rel="noreferrer">Executed Notebook</a>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Download the Outputs</h2>
+        <ul class="clean-list">
+          <li><a class="player-link" href="data/aris/valuation_summary.csv">valuation_summary.csv</a> &mdash; headline result</li>
+          <li><a class="player-link" href="data/aris/scenario_summary.csv">scenario_summary.csv</a> &mdash; low / base / high with every flexed driver</li>
+          <li><a class="player-link" href="data/aris/fcff_forecast.csv">fcff_forecast.csv</a> &mdash; year-by-year free cash flow and discounting</li>
+          <li><a class="player-link" href="data/aris/equity_bridge.csv">equity_bridge.csv</a> &mdash; enterprise value to value per share</li>
+          <li><a class="player-link" href="data/aris/wacc_components.csv">wacc_components.csv</a> &mdash; cost of capital build</li>
+          <li><a class="player-link" href="data/aris/driver_tornado.csv">driver_tornado.csv</a> &mdash; one-at-a-time driver swings</li>
+          <li><a class="player-link" href="data/aris/growth_projects.csv">growth_projects.csv</a> &mdash; Soto Norte and Toroparu optionality</li>
+          <li><a class="player-link" href="data/aris/model_checks.csv">model_checks.csv</a> &mdash; 27 integrity gates</li>
+          <li><a class="player-link" href="data/aris/assumptions_ledger.csv">assumptions_ledger.csv</a> &mdash; every input, tagged fact / guidance / analyst</li>
+          <li><a class="player-link" href="data/aris/source_register.csv">source_register.csv</a> &mdash; full provenance</li>
+        </ul>
+        <p class="viz-meta">
+          Not investment advice. A valuation as of 5 August 2026, shown to make the reasoning
+          auditable rather than to recommend a trade.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

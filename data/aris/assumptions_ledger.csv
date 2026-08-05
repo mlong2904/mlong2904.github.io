@@ -1,0 +1,65 @@
+assumption_path,value,unit,basis,source_id,note
+capital_expenditure.marmato_growth_musd,2026: 235; 2027: 90; 2028: 30; 2029: 15; 2030: 10,USD_millions,analyst,6K_Q2_2026-MDA,"Marmato non-sustaining capital was $128.2m in FY2025 and $123.3m in H1 2026 as the Bulk Mining Zone and CIP plant are built. First gold is expected in Q4 2026, so the spend completes across 2026-2027 and then falls away."
+capital_expenditure.segovia_growth_musd,2026: 45; 2027: 35; 2028: 25; 2029: 15; 2030: 10,USD_millions,analyst,6K_Q2_2026-MDA,"Segovia non-sustaining capital was $39.1m in FY2025 and $22.7m in H1 2026, covering underground development and plant debottlenecking after the second mill. Tapers as the mill reaches capacity."
+corporate.share_based_compensation_musd,18.0,USD_millions_2026,analyst,SEC-XBRL,"FY2025 was $42.1m, but that reflects mark-to-market revaluation of PSUs and DSUs after a very strong share price rather than a run-rate grant cost. FY2024 was $5.3m and FY2023 $5.1m. $18m is a normalised run-rate. SBC is treated as a real economic cost and is NOT added back in FCFF."
+gold_price.realized_price_deck,2026: 4490; 2027: 4000; 2028: 3700; 2029: 3450; 2030: 3300,USD_per_oz_nominal,analyst,YF-GOLD,"2026 blends the reported H1 realised price with H2 marked at spot. 2027-2029 fade toward a long-run real anchor of $3,300/oz (2030 dollars), which sits above the $2,800/oz used in Aris Mining's own Segovia reserve estimate and above the $2,200/oz used for Soto Norte reserves, so the deck is not more conservative than the company's own reserve basis. From 2030 the anchor is held flat in REAL terms and escalated at the FRED breakeven inflation rate."
+growth_projects.soto_norte.aisc_per_oz,1400,USD_per_oz_2026,analyst,,
+growth_projects.soto_norte.annual_production_oz,250000,troy_oz,analyst,,
+growth_projects.soto_norte.first_production_year,2032,year,analyst,,
+growth_projects.soto_norte.initial_capital_musd,1200,USD_millions,analyst,,
+growth_projects.soto_norte.probability_of_development,0.4,fraction,analyst,,"Not yet permitted and no construction decision has been taken. Soto Norte sits in a historically contentious permitting jurisdiction in Santander, Colombia, and an updated ESIA is still in progress."
+growth_projects.toroparu.aisc_per_oz,1500,USD_per_oz_2026,analyst,,
+growth_projects.toroparu.annual_production_oz,200000,troy_oz,analyst,,
+growth_projects.toroparu.first_production_year,2031,year,analyst,,
+growth_projects.toroparu.initial_capital_musd,1000,USD_millions,analyst,,
+growth_projects.toroparu.probability_of_development,0.35,fraction,analyst,,A prefeasibility study is in progress with a construction decision expected in early 2027.
+operations.marmato.steady_state_cash_cost_per_oz,1150,USD_per_oz_2026,analyst,40F_FY2025-AIF,"ANALYST JUDGEMENT AND A KEY VALUE DRIVER. Bulk underground mining at ~4,000 tpd replaces selective Upper Mine mining, so unit costs should fall sharply once the CIP plant is at nameplate. $1,150/oz is assumed by 2029, converging linearly from the H1 2026 level. Not yet demonstrated at scale - this is flagged in the model checks and carried explicitly in the scenario set."
+operations.segovia_cmp.production_oz,2026: 87000; 2027: 93000; 2028: 97000; 2029: 99000; 2030: 99000,troy_oz,analyst,6K_Q2_2026-MDA,"CMP-sourced ore was 33% of Segovia mill feed in H1 2026 (43,162 oz sold). Held at ~33% of Segovia's total as the mill ramps to ~300koz."
+operations.segovia_owner.production_oz,2026: 175000; 2027: 188000; 2028: 197000; 2029: 201000; 2030: 201000,troy_oz,analyst,6K_Q2_2026-MDA,"H1 2026 sold 87,309 oz (annualising to ~175koz). Management targets ~300koz of total Segovia steady-state production following the second mill, which was commissioned in June 2025. Owner Mining is held at ~67% of the Segovia total, in line with the H1 2026 mill-feed split disclosed in the MD&A."
+reclamation.spend_timing,end_of_mine_life,category,analyst,,"Undiscounted closure cost is assumed to be spent as mines are retired, and is deducted in the terminal period. Accretion sits in finance costs, not EBIT."
+reserves.marmato.inferred_conversion_rate,0.0,fraction,analyst,,
+reserves.marmato.metallurgical_recovery,0.9,fraction,analyst,,
+reserves.marmato.mi_conversion_rate,0.0,fraction,analyst,,
+reserves.segovia.inferred_conversion_rate,0.25,fraction,analyst,,
+reserves.segovia.metallurgical_recovery,0.945,fraction,analyst,,
+reserves.segovia.mi_conversion_rate,0.6,fraction,analyst,,
+taxes.normalized_cash_tax_rate,0.35,fraction,analyst,40F_FY2025-FINANCIAL_STATEMENTS,"Colombia's corporate rate, where essentially all operating income arises. The reported FY2025 effective rate of 61.7% ($127.7m on $207.1m) is NOT a usable forward rate: it is inflated by non-deductible fair-value losses on financial instruments, unrecorded deferred tax assets and foreign exchange. The Canadian statutory rate of 27% disclosed in the tax note is the parent's rate, not the rate on Colombian mining profit. 35% is the defensible normalised rate; it is sensitised in the scenario set."
+wacc.beta,1.35,unitless,analyst,YF-ARIS,"Yahoo Finance reports a 5-year beta of 1.94 for ARIS, but that period spans the Aris Gold / GCM merger, a warrant overhang and a low-liquidity phase, so it overstates forward systematic risk. 1.35 is used, consistent with mid-cap gold producer betas, and the raw 1.94 is carried as a documented cross-check and a sensitivity input."
+wacc.country_risk_premium,0.0289,fraction,analyst,DAMODARAN-CRP,"Colombia country risk premium (Damodaran, Baa2/BB+ sovereign rating band). Applied in full because effectively all producing assets are Colombian. Omitting it would understate the risk of this company materially."
+wacc.equity_risk_premium,0.043,fraction,analyst,DAMODARAN-ERP,Damodaran implied US equity risk premium.
+wacc.target_debt_weight,0.15,fraction,analyst,,Market-value gearing at the valuation date is only ~9% (roughly $520m of borrowings against a ~$3.3bn market capitalisation). A 15% target is used to avoid anchoring the cost of capital to a peak equity price.
+wacc.terminal_growth,0.0,fraction,analyst,,"Zero real growth. Used ONLY in the Gordon-growth cross-check; the base case is a finite mine-life valuation with no perpetuity. A depleting orebody does not grow forever, and the WACC x g grid exists to show what the perpetuity assumption would add."
+working_capital.inventory_days,49,days_of_cost_of_sales,analyst,SEC-XBRL,
+working_capital.payable_days,60,days_of_cost_of_sales,analyst,SEC-XBRL,
+working_capital.receivable_days,27,days_of_revenue,analyst,SEC-XBRL,
+corporate.g_and_a_musd,24.0,USD_millions_2026,fact,SEC-XBRL,"FY2025 actual $21.3m, growing with the larger asset base. Escalated at inflation."
+corporate.other_operating_expenses_musd,10.0,USD_millions_2026,fact,SEC-XBRL,FY2025 actual $10.0m.
+equity_bridge.borrowings_musd,519.5,USD_millions,fact,SEC-XBRL,FY2025 total borrowings; rolled forward in the pro forma.
+equity_bridge.cash_musd,391.9,USD_millions,fact,SEC-XBRL,
+equity_bridge.diluted_shares_millions,209.1,millions_of_shares,fact,40F_FY2025-FINANCIAL_STATEMENTS,"205.5m common shares outstanding at 2025-12-31 (206.4m per the latest market data), plus roughly 2.7m dilutive stock options per the FY2025 diluted EPS reconciliation. The listed warrants expired during 2025 and the warrant liability is nil, so there is no remaining warrant dilution."
+equity_bridge.lease_liabilities_musd,6.1,USD_millions,fact,SEC-XBRL,
+equity_bridge.non_controlling_interests_musd,0.0,USD_millions,fact,SEC-XBRL,NCI was reduced to nil at 2025-12-31 following the Soto Norte transaction.
+gold_price.by_product_revenue_pct_of_gold_revenue,0.023,fraction,fact,6K_Q2_2026-MDA,Silver and other by-product credits. H1 2026 $16.581m on $684.746m gold revenue (2.42%); FY2025 $20.019m on $909.1m (2.20%). 2.3% is the midpoint.
+growth_projects.soto_norte.attributable_interest,1.0,fraction,fact,40F_FY2025-AIF,
+growth_projects.soto_norte.reserves_koz,4600,thousand_oz_contained,fact,40F_FY2025-AIF,"20.3 Mt at 7.00 g/t proven and probable, effective 2025-08-18, at a US$2,200/oz gold price."
+growth_projects.toroparu.attributable_interest,1.0,fraction,fact,40F_FY2025-AIF,
+growth_projects.toroparu.resources_koz,5310,thousand_oz_contained,fact,40F_FY2025-AIF,"Measured and indicated, open pit 5,071 koz plus underground 239 koz, effective 2025-10-21. NO MINERAL RESERVES - this is a preliminary economic assessment asset, which is why the probability weighting is lower than Soto Norte's."
+operations.marmato.cash_cost_per_oz,2542,USD_per_oz_2026,fact,6K_Q2_2026-MDA,"H1 2026 actual, reflecting the small, high-cost Upper Mine before the expansion. See steady_state_cash_cost_per_oz for the post-expansion level."
+operations.marmato.royalty_pct_of_revenue,0.095,fraction,fact,6K_Q2_2026-MDA,"Materially above Segovia's ~3.5%, reflecting Marmato's additional royalty and stream obligations. H1 2026 $7.270m on ~$76.9m of Marmato gold revenue."
+operations.marmato.social_contributions_per_oz,81,USD_per_oz_2026,fact,6K_Q2_2026-MDA,
+operations.marmato.sustaining_capital_per_oz,198,USD_per_oz_2026,fact,6K_Q2_2026-MDA,
+operations.segovia_cmp.royalty_pct_of_revenue,0.033,fraction,fact,6K_Q2_2026-MDA,
+operations.segovia_cmp.social_contributions_per_oz,148,USD_per_oz_2026,fact,6K_Q2_2026-MDA,
+operations.segovia_cmp.sustaining_capital_per_oz,107,USD_per_oz_2026,fact,6K_Q2_2026-MDA,"H1 2026 $4.606m over 43,162 oz."
+operations.segovia_owner.cash_cost_per_oz,1050,USD_per_oz_2026,fact,6K_Q2_2026-MDA,"H1 2026 actual $1,031/oz; FY2025 actual $1,050/oz. Held at $1,050 in 2026 real terms and escalated at breakeven inflation. Excludes royalties, social contributions and sustaining capital, which are modelled separately below."
+operations.segovia_owner.royalty_pct_of_revenue,0.037,fraction,fact,6K_Q2_2026-MDA,H1 2026 royalties $15.220m on Owner Mining revenue; Colombian gold royalty regime.
+operations.segovia_owner.social_contributions_per_oz,167,USD_per_oz_2026,fact,6K_Q2_2026-MDA,"H1 2026 actual $167/oz, up from ~$122/oz in FY2025."
+operations.segovia_owner.sustaining_capital_per_oz,240,USD_per_oz_2026,fact,6K_Q2_2026-MDA,H1 2026 $236/oz; FY2025 $241/oz.
+reclamation.provision_musd,34.8,USD_millions,fact,SEC-XBRL,FY2025 current plus non-current provisions ($7.6m + $27.2m).
+reserves.marmato.proven_probable_koz,3178,thousand_oz_contained,fact,40F_FY2025-AIF,"31,277 kt at 3.16 g/t, effective 2022-06-30. Upper Mine 954 koz, Lower (Bulk Mining Zone) 2,224 koz. The AIF states an Upper Mine life of 19.5 years and a Lower Mine life of approximately 18 years."
+reserves.segovia.inferred_koz,2856,thousand_oz_contained,fact,40F_FY2025-AIF,
+reserves.segovia.measured_indicated_koz,3626,thousand_oz_contained,fact,40F_FY2025-AIF,"Inclusive of reserves. 7,371 kt at 15.30 g/t."
+reserves.segovia.proven_probable_koz,1503,thousand_oz_contained,fact,40F_FY2025-AIF,"4,367 kt at 10.70 g/t, effective 2025-11-28, estimated at a US$2,800/oz gold price."
+wacc.cost_of_debt_pretax,0.08,fraction,fact,40F_FY2025-AIF,"Coupon on the US$450m senior unsecured notes due 2029-10-31, the company's dominant debt instrument. This is an observed contractual rate, not an estimate."
+operations.marmato.production_oz,2026: 35000; 2027: 95000; 2028: 160000; 2029: 195000; 2030: 200000,troy_oz,guidance,6K_Q2_2026-MDA,"The new Bulk Mining Zone and CIP plant reach first gold in Q4 2026, ramping to a stated steady-state run-rate of ~200koz per year. The ramp shape between first gold and steady state is an analyst judgement; the 200koz destination is the company's published target."
+operations.segovia_cmp.aisc_sales_margin,0.38,fraction,guidance,6K_Q2_2026-MDA,"Full-year 2026 guidance range is 35%-40%; H1 2026 delivered 43%. The midpoint of guidance (38%) is used rather than the H1 outturn, because the H1 result was helped by an exceptionally high gold price and management has not raised the guide. CMP AISC per ounce = realised gold price x (1 - margin), so CMP costs scale with the gold price and the CMP stream contributes far less price leverage than Owner Mining. This is the single most important structural feature of the model."

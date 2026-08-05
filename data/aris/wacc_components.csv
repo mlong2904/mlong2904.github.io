@@ -1,0 +1,12 @@
+Component,Value,Source,Note
+Risk-free rate,0.047,"FRED DGS10, observed 2026-08-03",10-year constant-maturity Treasury yield
+Equity risk premium,0.043,DAMODARAN-ERP,Implied mature-market premium
+Beta (levered),1.35,YF-ARIS / analyst,Yahoo reports 1.94 over a period spanning the merger and warrant overhang; 1.35 used as the forward estimate
+Country risk premium (Colombia),0.0289,DAMODARAN-CRP,Applied in full - all producing assets are Colombian
+Cost of equity,0.13395,Computed,Rf + beta x ERP + CRP
+Pre-tax cost of debt,0.08,40F_FY2025-AIF,8.000% coupon on the US$450m 2029 senior unsecured notes
+Normalised tax rate,0.35,Analyst / Colombian statutory,Colombian corporate rate; reported effective rate is distorted
+After-tax cost of debt,0.052000000000000005,Computed,kd x (1 - t)
+Equity weight,0.85,Analyst target,1 - debt weight
+Debt weight,0.15,Analyst target,Target gearing; market gearing at the valuation date is only ~9%
+WACC,0.12165750000000002,Computed,We x Ke + Wd x Kd x (1 - t)

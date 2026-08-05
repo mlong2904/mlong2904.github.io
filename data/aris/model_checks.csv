@@ -1,0 +1,28 @@
+check,result,measured,threshold,detail
+Balance sheet balances in every projected year,PASS,0.0000000000 USD m,< 0.000001 USD m,"Total assets less total liabilities and equity, worst year."
+Cash flow statement reconciles to balance sheet cash,PASS,0.0000000000 USD m,< 0.000001 USD m,Closing cash per the cash flow statement equals balance sheet cash.
+Cash roll-forward is internally consistent,PASS,0.0000000000 USD m,< 0.000001 USD m,Opening cash plus net change equals closing cash.
+Debt roll-forward is internally consistent,PASS,0.0000000000 USD m,< 0.000001 USD m,Opening debt less repayments equals closing debt in every year.
+Debt schedule chains between years,PASS,0.0000000000 USD m,< 0.000001 USD m,Closing debt in one year equals opening debt in the next.
+Debt is fully repaid by the end of mine life,PASS,0.0000 USD m,0 USD m,A depleting orebody cannot support permanent leverage.
+PP&E roll-forward is internally consistent,PASS,0.0000000000 USD m,< 0.000001 USD m,Opening plus additions less depletion equals closing.
+Depletable asset base is fully depleted at end of mine life,PASS,0.000000 USD m,< 0.001 USD m,Units-of-production depletion must exhaust the asset base with the orebody.
+PP&E never goes negative,PASS,min 0.0000 USD m,>= 0,Depletion cannot exceed the carrying value.
+Terminal growth is below WACC in every scenario,PASS,g = 0.00%,min WACC = 11.65%,Required for the Gordon-growth cross-check to be finite and positive.
+WACC x terminal-growth grid blanks any cell where growth >= WACC,PASS,"0 blank, 0 unmasked violations","0 blank, 0 violations",Cells where g >= WACC would be negative or explosive and are masked. With the configured ranges (max g 2.5% vs min WACC 8.0%) 0 cells require masking.
+Diluted share count is positive and plausible,PASS,209.1 m,150 m - 400 m,Cross-checked against 205.5m shares outstanding at 2025-12-31 plus dilutive options.
+Diluted share count is at least the basic count,PASS,209.1 m,>= 205.5 m,Dilution can only increase the count.
+Every assumption declares a unit,PASS,0 missing,0,Unitless assumptions cannot be checked for consistency.
+"Fractional assumptions are expressed as decimals, not percentages",PASS,0 out of range,0,A rate entered as 35 rather than 0.35 would silently distort the model.
+No assumption is missing a value,PASS,0 missing,0,Every leaf in the assumption tree resolves to a number or a schedule.
+Every reported fact and guidance item cites a source id,PASS,0 uncited,0,Analyst judgements may stand alone; reported figures may not.
+Every cited source id exists in the source register,PASS,0 unknown,0,Unknown ids: none
+Scenario values are correctly ordered (low < base < high),PASS,4.23 / 14.65 / 25.34 USD,strictly increasing,A low case that is not the lowest would mean the drivers are not linked as intended.
+Scenarios differ materially from one another,PASS,spread 144.1% of base,> 20%,Scenarios that barely move indicate drivers are not genuinely flexed.
+Each scenario carries its own discount rate,PASS,3 distinct,3,"Beta is flexed by scenario, so the WACC must differ across cases."
+No NaN or infinite values in any model output,PASS,0 frames affected,0,All model frames are fully populated and finite.
+AISC margin is positive in every producing year,PASS,min 43.2%,> 0%,A negative all-in sustaining margin would mean mining at a loss.
+Production never exceeds mineable inventory,PASS,min remaining 0 oz,>= 0 oz,Cumulative production is capped by reserves plus credited resource conversion.
+Equity value is positive in the base case,PASS,"3,063 USD m",> 0,A negative equity value would indicate a structural modelling error.
+No source observation post-dates the valuation date,PASS,0 after 2026-08-05,0,All observations precede the valuation date.
+Market price is available for the upside calculation,PASS,15.91 USD,> 0,Sourced from the latest close in the preserved market data.

@@ -1,0 +1,18 @@
+Item,Value
+Company,Aris Mining Corporation
+Tickers,NYSE: ARIS; TSX: ARIS
+Valuation date,2026-08-05
+Reporting currency,USD
+Low intrinsic value per share (USD),4.23
+Base intrinsic value per share (USD),14.65
+High intrinsic value per share (USD),25.34
+Current market price (USD),15.91
+Implied upside / (downside) vs base case (%),-7.9
+Base case enterprise value (USD m),3432.1
+Base case equity value (USD m),3062.8
+WACC (base case),12.17%
+Cost of equity (base case),13.40%
+Diluted shares (millions),209.1
+Highest-sensitivity assumption,Long-run gold price (+/- $600/oz)
+Swing from that assumption (USD per share),10.8
+Terminal value method,"Mine-life depletion, no perpetuity (Gordon growth reported as a cross-check)"
