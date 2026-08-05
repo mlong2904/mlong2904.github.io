@@ -161,6 +161,48 @@ h3 {
   line-height: 1.52;
 }
 
+.product-gallery {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.product-shot {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--ring);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.product-shot a {
+  display: block;
+  background: #090910;
+  border-bottom: 1px solid var(--ring);
+}
+
+.product-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: opacity 160ms ease;
+}
+
+.product-shot a:hover img {
+  opacity: 0.9;
+}
+
+.product-shot figcaption {
+  padding: 0.7rem 0.8rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.product-shot figcaption strong {
+  color: var(--ink);
+}
+
 .clean-list {
   margin: 0.6rem 0 0;
   padding-left: 1.1rem;
@@ -683,6 +725,49 @@ th {
 code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9em;
+}
+
+.code-block {
+  margin: 0.7rem 0 0;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--ring);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  line-height: 1.5;
+}
+
+.code-block code {
+  font-size: 0.8rem;
+  white-space: pre;
+}
+
+.mermaid-figure {
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  border: 1px solid var(--ring);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mermaid-figure .mermaid {
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.mermaid-figure .mermaid:not([data-rendered]) {
+  white-space: pre;
+  color: var(--muted);
+  text-align: left;
+}
+
+.mermaid-figure svg {
+  max-width: 100%;
+  height: auto;
 }
 
 @keyframes rise-in {
