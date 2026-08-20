@@ -883,3 +883,13 @@ code {
     min-width: 560px;
   }
 }
+
+.bar-row.is-best .bar-fill {
+  background: linear-gradient(90deg, #157f4a, #4fbf87);
+}
+
+.bar-row.is-best .bar-label,
+.bar-row.is-best .bar-value {
+  color: #157f4a;
+  font-weight: 700;
+}

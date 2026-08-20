@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matthew Long | Apparel Demand &amp; Inventory Model</title>
+    <meta
+      name="description"
+      content="A temperature-driven apparel demand forecast for the United States and Canada, built in Excel from Berkeley Earth data with FORECAST.ETS for MGMT 472 at Purdue."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght@9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+
+    <main class="shell shell-left">
+      <header class="hero">
+        <nav class="site-nav" aria-label="Primary">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="projects.html">Projects</a>
+          <a class="nav-link is-active" href="project-apparel-demand.html">Apparel Demand</a>
+          <a class="nav-link" href="resume.html">Resume</a>
+          <a class="nav-link" href="https://www.linkedin.com/in/mjslong/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a class="nav-link" href="https://github.com/mlong2904" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+
+        <p class="eyebrow">Project Detail &middot; MGMT 472, Advanced Spreadsheet and Modeling</p>
+        <h1>Apparel Demand &amp; Inventory Model</h1>
+        <p class="lede">
+          A monthly apparel demand forecast for the United States and Canada, driven by
+          temperature. Fourteen years of Berkeley Earth land-temperature data feed a demand model
+          in Excel, <code>FORECAST.ETS</code> projects each country's temperature forward, and the
+          demand that follows sets the inventory a buyer would need to commit to.
+        </p>
+        <div class="button-row">
+          <a class="button" href="data/apparel/Apparel_Demand_Model.xlsx">Download the Workbook</a>
+          <a class="button" href="data/apparel/us_forecast.csv">US Forecast CSV</a>
+          <a class="button" href="data/apparel/canada_forecast.csv">Canada Forecast CSV</a>
+        </div>
+      </header>
+
+      <section class="panel">
+        <h2>What the Model Covers</h2>
+        <p>
+          The model runs on two markets, the United States and Canada, which are the two the
+          Berkeley Earth extract could be joined to reliably. Each gets fourteen years of monthly
+          average land temperature, a demand curve built on top of it, and a forecast carried
+          fourteen years forward from there.
+        </p>
+        <div class="stat-row" id="headline-stats"></div>
+      </section>
+
+      <section class="panel">
+        <h2>From Temperature to Demand</h2>
+        <p>
+          Demand has two arms. Winter apparel sells harder the further temperature falls below
+          100&deg;F, summer apparel the further it climbs above 50&deg;F, and each is scaled by a
+          market-size factor for the country and a seasonal factor for the month. Winter demand is
+          gated off between March and August, so the two arms do not both run in the shoulder
+          months.
+        </p>
+        <div class="table-wrap table-wrap-auto">
+          <table class="static-table">
+            <thead>
+              <tr><th>Column</th><th>Name</th><th>Formula</th><th>What it does</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="num">E</td><td>AvgTemp (C)</td><td>(raw input)</td><td>Berkeley Earth monthly average land temperature</td></tr>
+              <tr><td class="num">F</td><td>AvgTemp (F)</td><td><code>=(E2*1.8)+32</code></td><td>Conversion to Fahrenheit, the units the thresholds are written in</td></tr>
+              <tr><td class="num">G</td><td>CountryFactor</td><td>1.0 US, 1.2 Canada</td><td>Relative market size</td></tr>
+              <tr><td class="num">H</td><td>SeasonFactor</td><td>0.70 to 1.40 by month</td><td>Seasonal demand multiplier</td></tr>
+              <tr><td class="num">I</td><td>Noise</td><td><code>=NORM.INV(RAND(),0,50)</code></td><td>Month-to-month randomness, mean zero</td></tr>
+              <tr><td class="num">J</td><td>Winter_Demand</td><td><code>=IF(AND(C2&gt;=3,C2&lt;=8),0,MAX(0,(100-F2)*$I$4*G2*H2+I2))</code></td><td>Rises as temperature falls; off from March to August</td></tr>
+              <tr><td class="num">K</td><td>Summer_Demand</td><td><code>=ROUND(MAX(0,(F2-50)*$I$5*G2*H2+I2),0)</code></td><td>Rises as temperature climbs above 50&deg;F</td></tr>
+              <tr><td class="num">L</td><td>Total_Demand</td><td><code>=J2+K2</code></td><td>Both arms combined</td></tr>
+              <tr><td class="num">M</td><td>Inventory</td><td><code>=MAX(0,L2*(1+NORM.INV(RAND(),$I$6,0.08)))</code></td><td>Demand plus a random buffer averaging 10%</td></tr>
+              <tr><td class="num">N</td><td>Sales</td><td><code>=MIN(L2,M2)</code></td><td>You cannot sell what you did not stock</td></tr>
+              <tr><td class="num">O</td><td>Lost_Sales</td><td><code>=MAX(L2-M2,0)</code></td><td>Demand that arrived with no stock behind it</td></tr>
+              <tr><td class="num">P</td><td>Excess_Inventory</td><td><code>=MAX(M2-L2,0)</code></td><td>Stock left over, to be marked down</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="viz-meta">
+          Country and season factors:
+          <a class="player-link" href="data/apparel/lookup_tables.csv">lookup_tables.csv</a>.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>The Temperature Record</h2>
+        <p>
+          164 months of Berkeley Earth history per country, February 2000 through September 2013,
+          averaged by calendar month and set against the forecast for the same month. The two
+          markets are the point of the comparison: Canada's winters run about 11&deg;C colder
+          than the United States', which is what pushes almost all of its demand into the winter
+          arm.
+        </p>
+        <h3>United States</h3>
+        <div class="bar-chart bar-chart-wide" id="temp-bars-us"></div>
+        <h3>Canada</h3>
+        <div class="bar-chart bar-chart-wide" id="temp-bars-canada"></div>
+        <p class="viz-meta">
+          Bars show the forecast on a shared scale across both countries, measured from the coldest month rather than from zero so sub-zero temperatures read correctly. The label carries the historical average for the same month.
+          Sources: <a class="player-link" href="data/apparel/us_history.csv">us_history.csv</a>,
+          <a class="player-link" href="data/apparel/canada_history.csv">canada_history.csv</a>.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Forecasting with FORECAST.ETS</h2>
+        <p>
+          Excel's <code>FORECAST.ETS</code> fits exponential triple smoothing across three
+          components: level, trend and a repeating seasonal cycle. With the seasonality argument
+          set to 12, it reads the
+          annual temperature cycle out of the history and carries it forward, so a forecast January
+          looks like a January rather than an extension of a straight line. Each country's 164
+          months of history produce 164 months of forecast.
+        </p>
+        <p>
+          There are two defensible ways to use it here, and the workbook contains both. Canada's
+          forecast runs <code>FORECAST.ETS</code> directly on the demand series. The United States
+          forecasts <em>temperature</em> and applies the demand formulas to the result. This page
+          charts the second version for both countries, so the two are computed the same way and
+          can be compared. Against Canada's stored numbers that reconstruction correlates at
+          <strong>r = 0.99</strong>, with a mean absolute difference of <strong>39 units per
+          month</strong>, about 18% of Canada's monthly average. It runs somewhat higher overall,
+          because smoothing the demand series directly pulls its peaks down.
+        </p>
+        <p class="viz-meta">
+          Canada's stored forecast is preserved as-is in
+          <a class="player-link" href="data/apparel/canada_forecast.csv">canada_forecast.csv</a>.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Forecast Demand</h2>
+        <p>
+          Demand by calendar month across each forecast horizon. The shapes are genuinely
+          different: the United States earns real revenue from both arms, while Canada is a winter
+          market with a short summer tail.
+        </p>
+        <h3>United States</h3>
+        <div class="bar-chart bar-chart-wide" id="demand-bars-us"></div>
+        <h3>Canada</h3>
+        <div class="bar-chart bar-chart-wide" id="demand-bars-canada"></div>
+        <h3>Winter versus summer, whole horizon</h3>
+        <div class="bar-chart bar-chart-wide" id="demand-split"></div>
+        <p class="viz-meta">
+          Charts show the expected demand path. The workbook adds a <code>N(0, 50)</code> noise
+          term per month, which has mean zero and would only make these bars jitter.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>The Inventory Decision</h2>
+        <p>
+          Stock is committed a month ahead at forecast demand plus a buffer. The realised buffer
+          is drawn from a normal distribution centred on the target with an 8% standard
+          deviation, so the order rarely matches demand exactly. Sales are the lesser of
+          demand and inventory, anything short of demand is a <strong>lost sale</strong>, and
+          anything above it is <strong>excess inventory</strong>. Total cost is lost sales times
+          the stockout cost plus excess units times the holding cost.
+        </p>
+        <p>
+          The solver walks the buffer from 0% to 20% in steps of two points. At each step it runs
+          the stocking decision 60 times across both forecast horizons and averages the total
+          cost, then reports the cheapest step. Changing either cost below re-runs the whole
+          sweep, since the answer depends on how the two costs compare rather than on their
+          absolute size.
+        </p>
+        <div class="controls-grid">
+          <label class="control">
+            <span>Stockout cost per unit ($)</span>
+            <input type="number" id="cost-stockout" value="15" min="0.5" max="1000" step="0.5" />
+          </label>
+          <label class="control">
+            <span>Holding cost per unit ($)</span>
+            <input type="number" id="cost-holding" value="3" min="0.5" max="1000" step="0.5" />
+          </label>
+        </div>
+        <p id="solver-headline"></p>
+        <div class="bar-chart bar-chart-wide" id="solver-bars"></div>
+        <div class="button-row">
+          <button class="button" type="button" id="rerun-inventory">Re-run the stocking draws</button>
+        </div>
+        <p class="viz-meta">
+          Raise the stockout cost and the optimal buffer climbs; raise the holding cost and it
+          falls. At $15 and $3 the curve is nearly flat between 6% and 10%, which is the more
+          useful finding. The workbook's 10% default is already close to optimal, and precision
+          there buys very little.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>How Much That Answer Moves</h2>
+        <p>
+          The stocking outcome is a draw, not a fixed result. Running the decision 500 times over
+          both forecast horizons at the 10% buffer gives the range a buyer would actually live
+          inside.
+        </p>
+        <h3>Fill rate</h3>
+        <div class="range-bar" id="mc-fill-rate"></div>
+        <h3>Total cost</h3>
+        <div class="range-bar" id="mc-cost"></div>
+        <p class="viz-meta" id="monte-carlo-note"></p>
+      </section>
+
+      <section class="panel">
+        <h2>Known Limitations</h2>
+        <ul class="clean-list">
+          <li>
+            The Berkeley Earth history ends in September 2013, so the forecast projects from a
+            record that is now a decade old rather than from current conditions.
+          </li>
+          <li>
+            A country is represented by a single national monthly average. Canada spans several
+            climates and one number for the whole country flattens all of them.
+          </li>
+          <li>
+            Demand responds to temperature, seasonality and market size, and to nothing else. There
+            is no price, no promotion, no competitor behaviour, no shift in consumer preference,
+            and no inventory carried from one month into the next.
+          </li>
+          <li>
+            The country and season factors are assumed rather than estimated. Canada's 1.2 and the
+            monthly multipliers were chosen to be plausible, and no sales data was fitted to them,
+            so demand levels are meaningful relative to each other rather than as units anyone
+            would order against.
+          </li>
+          <li>
+            Demand is modelled as two linear kinks. Combined with the March to August winter gate
+            and the 50&deg;F summer threshold, that leaves a dead zone: US March demand comes out
+            at zero, because winter is switched off and the month averages just under 50&deg;F.
+            That is a property of the curve, not a claim about March.
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Downloads</h2>
+        <ul class="clean-list">
+          <li><a class="player-link" href="data/apparel/Apparel_Demand_Model.xlsx">Apparel_Demand_Model.xlsx</a>, the full workbook including the Berkeley Earth sheets</li>
+          <li><a class="player-link" href="data/apparel/us_history.csv">us_history.csv</a>, 164 months of US temperature and modelled demand</li>
+          <li><a class="player-link" href="data/apparel/us_forecast.csv">us_forecast.csv</a>, the US forecast block from the workbook</li>
+          <li><a class="player-link" href="data/apparel/canada_history.csv">canada_history.csv</a>, 164 months of Canadian temperature</li>
+          <li><a class="player-link" href="data/apparel/canada_forecast.csv">canada_forecast.csv</a>, Canada's stored forecast from FORECAST.ETS on the demand series</li>
+          <li><a class="player-link" href="data/apparel/lookup_tables.csv">lookup_tables.csv</a>, country factors, season factors and model parameters</li>
+        </ul>
+        <p class="viz-meta">
+          Temperature data from the Berkeley Earth surface temperature record. Coursework for
+          MGMT 472, Advanced Spreadsheet and Modeling, Purdue University.
+        </p>
+      </section>
+    </main>
+    <script src="apparel-model.js"></script>
+  </body>
+</html>
